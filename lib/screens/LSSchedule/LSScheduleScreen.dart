@@ -246,7 +246,6 @@ class LSScheduleScreenState extends State<LSScheduleScreen> {
                 order.status = 'Confirmé';
                 _clearCart();
                 finish(context);
-                LSOrderDetailScreen(order).launch(context);
                 LSOrder.OrderHistory.add(order);
                 LSOrder.reset();
               }

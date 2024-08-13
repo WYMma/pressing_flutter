@@ -1,5 +1,6 @@
 //region imports
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:laundry/db/LSCartProvider.dart';
 import 'package:laundry/fragments/LSHomeFragment.dart';
@@ -24,7 +25,7 @@ void main() async {
 
   appStore.toggleDarkMode(value: getBoolAsync(isDarkModeOnPref));
   appStore.toggleSignInStatus(value: getBoolAsync(isSignedInPref));
-  appStore.toggleNotificationsStatus(value: getBoolAsync(isNotificationsEnabledPref));
+  appStore.toggleNotificationsStatus(value: !getBoolAsync(isNotificationsEnabledPref));
 
   defaultRadius = 10;
   defaultToastGravityGlobal = ToastGravity.BOTTOM;
@@ -37,6 +38,7 @@ void main() async {
       child: MyApp(),
     ),
   );
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   //endregion
 }
 

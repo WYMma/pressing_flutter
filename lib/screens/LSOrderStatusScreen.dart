@@ -34,10 +34,33 @@ class LSOrderStatusScreenState extends State<LSOrderStatusScreen> {
   }
 
   void _cancelOrder() {
-    LSOrder.removeOrder(widget.data!);
-    Navigator.pop(context);
-    Navigator.pop(context);
-    toast('Commande annulée avec succès');
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Confirmation'),
+          content: Text('Êtes-vous sûr de vouloir annuler la commande ?'),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Non', style: boldTextStyle()),
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+            ),
+            TextButton(
+              child: Text('Oui', style: boldTextStyle()),
+              onPressed: () {
+                LSOrder.removeOrder(widget.data!);
+                Navigator.of(context).pop(); // Close the dialog
+                Navigator.pop(context); // Close the order status screen
+                Navigator.pop(context); // Go back to the previous screen
+                toast('Commande annulée avec succès');
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   bool _canCancelOrder() {

@@ -109,9 +109,10 @@ class _LSAddressListComponentState extends State<LSAddressListComponent> {
             },
             child: Card(
               color: isSelected ? Colors.blue : context.cardColor,
+              elevation: isSelected ? 4 : 0,
               margin: EdgeInsets.symmetric(horizontal: 16),
               child: ListTile(
-                title: Text(address.toString()),
+                title: Text(address.toString(), style: boldTextStyle(weight: isSelected ? FontWeight.w600 : FontWeight.normal)),
               ),
             ).paddingTop(25),
           );

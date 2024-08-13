@@ -65,7 +65,7 @@ class LSOrderDetailScreenState extends State<LSOrderDetailScreen> {
                   Text('Articles', style: boldTextStyle(size: 18)),
                   Divider(),
                   Container(
-                    height: 300, // Ajustez la hauteur en fonction de vos besoins
+                    height: 250,
                     child: ListView.builder(
                       padding: EdgeInsets.symmetric(vertical: 5, horizontal: 10), // Ajustez le padding si nécessaire
                       itemCount: widget.data!.cartItems.length,

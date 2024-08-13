@@ -79,6 +79,7 @@ class _LSCartFragmentState extends State<LSCartFragment> {
                     itemBuilder: (context, index) {
                       final item = cartItems[index];
                       return Card(
+                        elevation: 0,
                         child: ListTile(
                           contentPadding: EdgeInsets.all(15),
                           minVerticalPadding: 20,

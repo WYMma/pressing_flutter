@@ -144,64 +144,66 @@ class LSProfileFragmentState extends State<LSProfileFragment> with AutomaticKeep
             ],
           ).paddingTop(16),
           const SizedBox(height: 35),
-          ...List.generate(
-            customListTiles.length,
-                (index) {
-              final tile = customListTiles[index];
-              return Padding(
-                padding: const EdgeInsets.only(bottom: 5),
-                child: Card(
-                  elevation: 4,
-                  shadowColor: Colors.black12,
-                  child: ListTile(
-                    leading: Icon(tile.icon),
-                    title: Text(tile.title),
-                    trailing: tile.title == "Notifications"
-                        ? Switch(
-                      value: isNotificationsEnabled,
-                      activeColor: LSColorPrimary,
-                      activeTrackColor: LSColorSecondary,
-                      onChanged: (value) {
-                        setState(() {
-                          isNotificationsEnabled = value;
-                          appStore.toggleNotificationsStatus(value: value);
-                        });
-                      },
-                    )
-                        : const Icon(Icons.chevron_right),
-                    onTap: () {
-                      switch (tile.title) {
-                        case "Paramètres":
-                          LSSettings().launch(context);
-                          break;
-                        case "Location":
-                          LSSavedAddressesScreen().launch(context);
-                          break;
-                        case "Méthode de Paiement":
-                          LSSavedPaymentMethodsScreen().launch(context);
-                          break;
-                        case "Notifications":
-                          setState(() {
-                            isNotificationsEnabled = !isNotificationsEnabled;
-                          });
-                          break;
-                        case "Déconnexion":
-                        // Handle logout
-                          isSignedIn = false;
-                          appStore.toggleSignInStatus(value: isSignedIn);
-                          Fluttertoast.showToast(msg: "Déconnexion réussie");
-                          Navigator.of(context).pushAndRemoveUntil(
-                            MaterialPageRoute(builder: (context) => LSSignInScreen()),
-                                (Route<dynamic> route) => false,
-                          );
-                          break;
-                      }
-                    },
-                  ),
-                ),
+          buildProfileItem(
+            context,
+            title: 'Paramètres',
+            icon: Icons.settings_rounded,
+            onTap: () {
+              LSSettings().launch(context);
+            },
+          ),
+          buildProfileItem(
+            context,
+            icon: Icons.location_on_outlined,
+            title: "Location",
+            onTap: () {
+              LSSavedAddressesScreen().launch(context);
+            },
+          ),
+          buildProfileItem(
+            context,
+            icon: Icons.credit_card,
+            title: "Méthode de Paiement",
+            onTap: () {
+              LSSavedPaymentMethodsScreen().launch(context);
+            },
+          ),
+          buildProfileItem(
+            context,
+            title: "Notifications",
+            icon: CupertinoIcons.bell,
+            trailing: Switch(
+              value: isNotificationsEnabled,
+              activeColor: LSColorPrimary,
+              activeTrackColor: LSColorSecondary,
+              onChanged: (value) {
+                setState(() {
+                  isNotificationsEnabled = value;
+                  appStore.toggleNotificationsStatus(value: value);
+                });
+              },
+            ),
+            onTap: () {
+              setState(() {
+                isNotificationsEnabled = !isNotificationsEnabled;
+                appStore.toggleNotificationsStatus(value: isNotificationsEnabled);
+              });
+            },
+          ),
+          buildProfileItem(
+            context,
+            title: "Déconnexion",
+            icon: CupertinoIcons.arrow_right_arrow_left,
+            onTap: () {
+              isSignedIn = false;
+              appStore.toggleSignInStatus(value: isSignedIn);
+              Fluttertoast.showToast(msg: "Déconnexion réussie");
+              Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(builder: (context) => LSSignInScreen()),
+                    (Route<dynamic> route) => false,
               );
             },
-          )
+          ),
         ],
       ),
       bottomNavigationBar: LSNavBar(selectedIndex: _selectedIndex),
@@ -213,34 +215,28 @@ class LSProfileFragmentState extends State<LSProfileFragment> with AutomaticKeep
 
 }
 
-class CustomListTile {
-  final IconData icon;
-  final String title;
-  CustomListTile({
-    required this.icon,
-    required this.title,
-  });
-}
-
-List<CustomListTile> customListTiles = [
-  CustomListTile(
-    icon: Icons.settings_rounded,
-    title: "Paramètres",
-  ),
-  CustomListTile(
-    icon: Icons.location_on_outlined,
-    title: "Location",
-  ),
-  CustomListTile(
-    icon: Icons.credit_card,
-    title: "Méthode de Paiement",
-  ),
-  CustomListTile(
-    title: "Notifications",
-    icon: CupertinoIcons.bell,
-  ),
-  CustomListTile(
-    title: "Déconnexion",
-    icon: CupertinoIcons.arrow_right_arrow_left,
-  ),
-];
+Widget buildProfileItem(BuildContext context,
+    {required String title,
+      required IconData icon,
+      Widget? trailing,
+      required Function() onTap}) {
+  return Padding(
+    padding: const EdgeInsets.only(bottom: 5),
+    child: Card(
+      elevation: 4,
+      shadowColor: Colors.black12,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: ListTile(
+        leading: Icon(icon),
+        title: Text(
+          title,
+          style: boldTextStyle(),
+        ),
+        trailing: trailing ?? const Icon(Icons.chevron_right),
+        onTap: onTap,
+      ),
+    ),
+  );
+}//

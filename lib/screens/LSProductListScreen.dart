@@ -134,6 +134,7 @@ class _LSProductListScreenState extends State<LSProductListScreen> {
               itemBuilder: (context, index) {
                 final product = filteredProducts[index];
                 return Card(
+                  elevation: 0,
                   child: Padding(
                     padding: EdgeInsets.all(20.0),
                     child: ListTile(
@@ -141,6 +142,7 @@ class _LSProductListScreenState extends State<LSProductListScreen> {
                       title: Text(product.name),
                       subtitle: Text('${product.price} DT'),
                       trailing: AppButton(
+                        elevation: 0,
                         width: 40,
                         onTap: () {
                           cart.addCounter();

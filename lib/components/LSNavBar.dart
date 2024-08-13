@@ -6,6 +6,7 @@ import 'package:laundry/fragments/LSHomeFragment.dart';
 import 'package:laundry/fragments/LSOfferFragment.dart';
 import 'package:laundry/fragments/LSProfileFragment.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
+import 'package:laundry/main.dart';
 import 'package:laundry/utils/LSColors.dart';
 import 'package:nb_utils/nb_utils.dart';
 import 'package:page_transition/page_transition.dart';
@@ -43,12 +44,12 @@ class LSNavBar extends StatelessWidget {
             rippleColor: Colors.grey[300]!,
             hoverColor: LSColorPrimary,
             gap: 8,
-            activeColor: Colors.white,
+            activeColor: appStore.isDarkModeOn ? lightGrey : Colors.black,
             iconSize: 24,
             padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             duration: Duration(milliseconds: 400),
             tabBackgroundColor: LSColorPrimary.withOpacity(0.7),
-            color: lightGrey,
+            color: appStore.isDarkModeOn ? lightGrey : Colors.black,
             tabs: [
               GButton(
                 icon: Icons.home,
@@ -70,7 +71,7 @@ class LSNavBar extends StatelessWidget {
                       );
                     },
                   ),
-                  child: Icon(Icons.shopping_cart, color: lightGrey),
+                  child: Icon(Icons.shopping_cart, color: appStore.isDarkModeOn ? lightGrey : Colors.black),
                 ),
               ),
               GButton(

@@ -6,8 +6,6 @@ import 'package:laundry/fragments/LSOfferFragment.dart';
 import 'package:laundry/utils/LSColors.dart';
 import 'package:nb_utils/nb_utils.dart';
 import 'package:provider/provider.dart';
-import 'package:google_nav_bar/google_nav_bar.dart';
-
 import '../components/LSSOfferPackageComponent.dart';
 import '../components/LSServiceNearByComponent.dart';
 import '../components/LSTopServiceComponent.dart';
@@ -57,101 +55,93 @@ class LSHomeFragmentState extends State<LSHomeFragment> with AutomaticKeepAliveC
   Widget build(BuildContext context) {
     super.build(context); // Needed when using AutomaticKeepAliveClientMixin
     return Scaffold(
-      appBar: _buildAppBar(),
-      body: _buildBody(),
-      bottomNavigationBar: LSNavBar(selectedIndex: _selectedIndex),
-    );
-  }
-
-  AppBar _buildAppBar() {
-    return AppBar(
-      backgroundColor: appStore.isDarkModeOn ? context.cardColor : LSColorPrimary,
-      toolbarHeight: 100, // Set the height of the app bar
-      title: Padding(
-        padding: const EdgeInsets.only(left: 16, right: 16, top: 20),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Expanded(
-              child: Text(
-                welcometext(),
-                style: boldTextStyle(color: white, size: 20),
-                maxLines: 2,
+      appBar: AppBar(
+        backgroundColor: appStore.isDarkModeOn ? context.cardColor : LSColorPrimary,
+        toolbarHeight: 80, // Set the height of the app bar
+        title: Padding(
+          padding: const EdgeInsets.only(left: 16, right: 16, top: 20, bottom: 20),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: Text(
+                  welcometext(),
+                  style: boldTextStyle(color: white, size: 20),
+                  maxLines: 2,
+                ),
               ),
-            ),
-            IconButton(
-              icon: Icon(Icons.notifications),
-              color: context.iconColor,
-              onPressed: () {
-                LSNotificationsScreen().launch(context);
-              },
-            ),
-            InkWell(
-              onTap: () {
-                LSCartFragment().launch(context);
-              },
-              child: Center(
-                child: Badge(
-                  label: Consumer<LSCartProvider>(
-                    builder: (context, value, child) {
-                      return Text(
-                        value.getCounter().toString(),
-                        style: TextStyle(color: Colors.white),
-                      );
-                    },
+              IconButton(
+                icon: Icon(Icons.notifications),
+                color: context.iconColor,
+                onPressed: () {
+                  LSNotificationsScreen().launch(context);
+                },
+              ),
+              InkWell(
+                onTap: () {
+                  LSCartFragment().launch(context);
+                },
+                child: Center(
+                  child: Badge(
+                    label: Consumer<LSCartProvider>(
+                      builder: (context, value, child) {
+                        return Text(
+                          value.getCounter().toString(),
+                          style: TextStyle(color: Colors.white),
+                        );
+                      },
+                    ),
+                    child: Icon(Icons.shopping_cart, color: context.iconColor),
                   ),
-                  child: Icon(Icons.shopping_cart, color: context.iconColor),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
+        ),
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
+        ),
+        automaticallyImplyLeading: false,
+      ),
+      body: Container(
+        color: appStore.isDarkModeOn ? context.scaffoldBackgroundColor : LSColorSecondary.withOpacity(0.55),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              8.height,
+              Text('Top Services', style: boldTextStyle(size: 18)).paddingOnly(left: 16, top: 16, right: 16, bottom: 8),
+              LSTopServiceComponent(),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text('Nos Pressings', style: boldTextStyle(size: 18)).expand(),
+                  TextButton(
+                    onPressed: () {
+                      LSNearByScreen().launch(context);
+                    },
+                    child: Text('Voir tout', style: secondaryTextStyle()),
+                  ),
+                ],
+              ).paddingOnly(left: 16, top: 16, right: 16),
+              LSServiceNearByComponent(),
+              Row(
+                children: [
+                  Text('Offres et forfaits spéciaux', style: boldTextStyle(size: 18)).expand(),
+                  TextButton(
+                    onPressed: () {
+                      LSOfferFragment().launch(context);
+                    },
+                    child: Text('Voir tout', style: secondaryTextStyle()),
+                  ),
+                ],
+              ).paddingOnly(left: 16, right: 16),
+              LSSOfferPackageComponent(),
+            ],
+          ),
         ),
       ),
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
-      ),
-      automaticallyImplyLeading: false,
-    );
-  }
-
-  Widget _buildBody() {
-    return Container(
-      color: appStore.isDarkModeOn ? context.scaffoldBackgroundColor : LSColorSecondary.withOpacity(0.55),
-      child: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            8.height,
-            Text('Top Services', style: boldTextStyle(size: 18)).paddingOnly(left: 16, top: 16, right: 16, bottom: 8),
-            LSTopServiceComponent(),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text('Nos Pressings', style: boldTextStyle(size: 18)).expand(),
-                TextButton(
-                  onPressed: () {
-                    LSNearByScreen().launch(context);
-                  },
-                  child: Text('Voir tout', style: secondaryTextStyle()),
-                ),
-              ],
-            ).paddingOnly(left: 16, top: 16, right: 16),
-            LSServiceNearByComponent(),
-            Row(
-              children: [
-                Text('Offres et forfaits spéciaux', style: boldTextStyle(size: 18)).expand(),
-                TextButton(
-                  onPressed: () {
-                    LSOfferFragment().launch(context);
-                  },
-                  child: Text('Voir tout', style: secondaryTextStyle()),
-                ),
-              ],
-            ).paddingOnly(left: 16, right: 16),
-            LSSOfferPackageComponent(),
-          ],
-        ),
-      ),
+      bottomNavigationBar: LSNavBar(selectedIndex: _selectedIndex),
     );
   }
 

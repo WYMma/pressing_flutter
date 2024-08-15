@@ -6,6 +6,7 @@ import 'package:laundry/fragments/LSHomeFragment.dart';
 import 'package:laundry/screens/LSSchedule/LSCompleteComponent.dart';
 import 'package:laundry/screens/LSSchedule/LSDateTimeComponent.dart';
 import 'package:laundry/screens/LSSchedule/LSPaymentMethodComponent.dart';
+import 'package:laundry/services/LSLocalAuthService.dart';
 import 'package:laundry/services/LSNotificationService.dart';
 import 'package:nb_utils/nb_utils.dart';
 import 'package:provider/provider.dart';
@@ -14,7 +15,6 @@ import 'package:laundry/db/LSDBHelper.dart';
 import '../../main.dart';
 import '../../model/LSOrder.dart';
 import '../../utils/LSColors.dart';
-import '../LSOrderDetailScreen.dart';
 
 class LSScheduleScreen extends StatefulWidget {
   static String tag = '/LSScheduleScreen';
@@ -220,54 +220,74 @@ class LSScheduleScreenState extends State<LSScheduleScreen> {
           textColor: white,
           text: btnTitle,
           onTap: () async {
-            if (currentPage == 0) {
-              if (order.address == null) {
-                toast('Veuillez sélectionner une adresse');
-                return;
-              } else {
+            switch (currentPage) {
+              case 0:
+                if (order.address == null) {
+                  toast('Veuillez sélectionner une adresse');
+                  return;
+                } else {
+                  _pageController.nextPage(duration: Duration(milliseconds: 300), curve: Curves.ease);
+                }
+                break;
+
+              case 1:
+                if (order.pickUpDate.isBefore(DateTime.now())) {
+                  toast('La date de ramassage doit être ultérieure à la date actuelle');
+                  return;
+                } else {
+                  _pageController.nextPage(duration: Duration(milliseconds: 300), curve: Curves.ease);
+                }
+                break;
+
+              case 2:
                 _pageController.nextPage(duration: Duration(milliseconds: 300), curve: Curves.ease);
-              }
-            } else if (currentPage == 1) {
-              if (order.pickUpDate!.isBefore(DateTime.now())) {
-                toast('La date de ramassage doit être ultérieure à la date actuelle');
-                return;
-              } else {
-                _pageController.nextPage(duration: Duration(milliseconds: 300), curve: Curves.ease);
-              }
-            } else if (currentPage == 2) {
-              _pageController.nextPage(duration: Duration(milliseconds: 300), curve: Curves.ease);
-            } else if (currentPage == 3) {
-              if (order.pickUpDate!.isBefore(DateTime.now())) {
-                toast('La date de ramassage doit être ultérieure à la date actuelle');
-                return;
-              } else if (order.address == null) {
-                toast('Veuillez sélectionner une adresse');
-                return;
-              } else {
-                toast('Commande réussie');
-                order.confirmOrder();
-                order.status = 'Confirmé';
-                _clearCart();
-                finish(context);
-                LSHomeFragment().launch(context);
-                LSOrder.OrderHistory.add(order);
-                LSOrder.reset();
-                await LSNotificationService.showNotification(
-                    title: "Commande confirmée",
-                    body: "Votre commande a été confirmée avec succès",
-                    payload: {
-                      "navigate": "true",
-                    },
-                    actionButtons: [
-                      NotificationActionButton(
-                        key: 'check',
-                        label: 'Voir la commande',
-                        actionType: ActionType.SilentAction,
-                        color: Colors.green,
-                      )
-                    ]
-                );
-              }
+                break;
+
+              case 3:
+                if (order.pickUpDate.isBefore(DateTime.now())) {
+                  toast('La date de ramassage doit être ultérieure à la date actuelle');
+                  return;
+                } else if (order.address == null) {
+                  toast('Veuillez sélectionner une adresse');
+                  return;
+                } else {
+                  bool isAuthenticated = await LSLocalAuthService.authenticate();
+                  if (isAuthenticated) {
+                    toast('Commande réussie');
+                    order.confirmOrder();
+                    order.status = 'Confirmé';
+                    _clearCart();
+                    LSOrder.OrderHistory.add(order);
+                    LSOrder.reset();
+                    finish(context);
+                    LSHomeFragment().launch(context);
+                    await LSNotificationService.showNotification(
+                      title: "Commande confirmée",
+                      body: "Votre commande a été confirmée avec succès",
+                      payload: {"navigate": "true"},
+                      actionButtons: [
+                        NotificationActionButton(
+                          key: 'check',
+                          label: 'Voir la commande',
+                          actionType: ActionType.SilentAction,
+                          color: Colors.green,
+                        ),
+                      ],
+                    );
+                  } else {
+                    toast('Authentification échouée');
+                    LSOrder.reset();
+                    finish(context);
+                    LSHomeFragment().launch(context);
+                    await LSNotificationService.showNotification(
+                      title: "Commande Echouée",
+                      body: "Votre commande n'a pas pu être confirmée",
+                    );
+                  }
+                }
+                break;
+
+              default: break;
             }
           },
         ).paddingAll(16),

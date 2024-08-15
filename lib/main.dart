@@ -13,6 +13,8 @@ import 'package:laundry/utils/LSWidgets.dart';
 import 'package:nb_utils/nb_utils.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 
 AppStore appStore = AppStore();
 
@@ -24,6 +26,9 @@ void main() async {
   await initialize(aLocaleLanguageList: languageList());
   await initializeDateFormatting('fr-FR', null);
   await LSNotificationService.initializeNotification();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
 
   appStore.toggleDarkMode(value: getBoolAsync(isDarkModeOnPref));
   appStore.toggleSignInStatus(value: getBoolAsync(isSignedInPref));

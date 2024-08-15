@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:laundry/services/LSLocalAuthService.dart';
 import 'package:laundry/utils/LSColors.dart';
 import 'package:nb_utils/nb_utils.dart';
 import 'package:u_credit_card/u_credit_card.dart';
@@ -101,9 +102,14 @@ class _LSCreditCardWidgetState extends State<LSCreditCardWidget> {
                     'Modifier',
                     style: TextStyle(color: Theme.of(context).textTheme.bodyLarge!.color),
                   ),
-                  onTap: () {
-                    Navigator.pop(context);
-                    _navigateToEditPaymentMethod(context, cardNumber);
+                  onTap: () async {
+                    bool isAuthenticated = await LSLocalAuthService.authenticate();
+                    if (isAuthenticated) {
+                      Navigator.pop(context);
+                      _navigateToEditPaymentMethod(context, cardNumber);
+                    } else {
+                      toast('Authentification échouée');
+                    }
                   },
                 ),
                 ListTile(
@@ -112,11 +118,16 @@ class _LSCreditCardWidgetState extends State<LSCreditCardWidget> {
                     'Supprimer',
                     style: TextStyle(color: Theme.of(context).textTheme.bodyLarge!.color),
                   ),
-                  onTap: () {
-                    setState(() {
-                      LSCreditCardWidget.deletePaymentMethod(cardNumber);
-                    });
-                    Navigator.pop(context);
+                  onTap: () async {
+                    bool isAuthenticated = await LSLocalAuthService.authenticate();
+                    if (isAuthenticated) {
+                      setState(() {
+                        LSCreditCardWidget.deletePaymentMethod(cardNumber);
+                      });
+                      Navigator.pop(context);
+                    } else {
+                      toast('Authentification échouée');
+                    }
                   },
                 ),
               ],

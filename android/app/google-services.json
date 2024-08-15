@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1065545507158",
+    "project_id": "pressing-flutter",
+    "storage_bucket": "pressing-flutter.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1065545507158:android:0ea21924174b0587bff6f7",
+        "android_client_info": {
+          "package_name": "com.manitaY.pressing"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA95Yyx0Iy2navrRgznCmEvF71LO_e8hPQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:laundry/components/LSNavBar.dart';
 import 'package:laundry/main.dart';
+import 'package:laundry/services/LSLocalAuthService.dart';
 import 'package:laundry/utils/LSColors.dart';
 import 'package:nb_utils/nb_utils.dart';
 import 'package:laundry/model/LSCreditCardWidget.dart';
@@ -23,13 +24,18 @@ class LSSavedPaymentMethodsScreenState extends State<LSSavedPaymentMethodsScreen
       body: LSCreditCardWidget(), // Display the saved payment methods using LSCreditCardWidget
       floatingActionButton: FloatingActionButton(
         backgroundColor: LSColorPrimary,
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => LSAddPaymentMethod()),
-          ).then((_) {
-            setState(() {}); // Refresh list when coming back from add screen
-          });
+        onPressed: () async {
+          bool isAuthenticated = await LSLocalAuthService.authenticate();
+          if (isAuthenticated) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => LSAddPaymentMethod()),
+            ).then((_) {
+              setState(() {}); // Refresh list when coming back from add screen
+            });
+          } else {
+            toast('Authentification échouée');
+          }
         },
         child: Icon(Icons.add, color: white),
       ),

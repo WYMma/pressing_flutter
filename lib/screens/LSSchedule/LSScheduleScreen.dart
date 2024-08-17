@@ -1,4 +1,3 @@
-import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/material.dart';
 import 'package:laundry/components/LSAddressListComponent.dart';
 import 'package:laundry/db/LSCartProvider.dart';
@@ -7,7 +6,6 @@ import 'package:laundry/screens/LSSchedule/LSCompleteComponent.dart';
 import 'package:laundry/screens/LSSchedule/LSDateTimeComponent.dart';
 import 'package:laundry/screens/LSSchedule/LSPaymentMethodComponent.dart';
 import 'package:laundry/services/LSLocalAuthService.dart';
-import 'package:laundry/services/LSNotificationService.dart';
 import 'package:nb_utils/nb_utils.dart';
 import 'package:provider/provider.dart';
 import 'package:laundry/db/LSDBHelper.dart';
@@ -261,28 +259,11 @@ class LSScheduleScreenState extends State<LSScheduleScreen> {
                     LSOrder.reset();
                     finish(context);
                     LSHomeFragment().launch(context);
-                    await LSNotificationService.showNotification(
-                      title: "Commande confirmée",
-                      body: "Votre commande a été confirmée avec succès",
-                      payload: {"navigate": "true"},
-                      actionButtons: [
-                        NotificationActionButton(
-                          key: 'check',
-                          label: 'Voir la commande',
-                          actionType: ActionType.SilentAction,
-                          color: Colors.green,
-                        ),
-                      ],
-                    );
                   } else {
                     toast('Authentification échouée');
                     LSOrder.reset();
                     finish(context);
                     LSHomeFragment().launch(context);
-                    await LSNotificationService.showNotification(
-                      title: "Commande Echouée",
-                      body: "Votre commande n'a pas pu être confirmée",
-                    );
                   }
                 }
                 break;

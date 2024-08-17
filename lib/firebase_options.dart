@@ -65,4 +65,5 @@ class DefaultFirebaseOptions {
     storageBucket: 'pressing-flutter.appspot.com',
     iosBundleId: 'com.manitaY.pressing',
   );
+
 }

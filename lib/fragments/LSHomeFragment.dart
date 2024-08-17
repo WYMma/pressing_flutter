@@ -3,7 +3,6 @@ import 'package:laundry/components/LSNavBar.dart';
 import 'package:laundry/db/LSCartProvider.dart';
 import 'package:laundry/fragments/LSCartFragment.dart';
 import 'package:laundry/fragments/LSOfferFragment.dart';
-import 'package:laundry/screens/LSNotif.dart';
 import 'package:laundry/utils/LSColors.dart';
 import 'package:nb_utils/nb_utils.dart';
 import 'package:provider/provider.dart';
@@ -75,7 +74,7 @@ class LSHomeFragmentState extends State<LSHomeFragment> with AutomaticKeepAliveC
                 icon: Icon(Icons.notifications),
                 color: context.iconColor,
                 onPressed: () {
-                  LSNotif().launch(context);
+                  LSNotificationsScreen().launch(context);
                 },
               ),
               InkWell(

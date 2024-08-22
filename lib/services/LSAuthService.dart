@@ -1,11 +1,13 @@
 import 'package:dio/dio.dart' as Dio;
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:laundry/main.dart';
 import 'package:laundry/model/user.dart';
 import 'package:laundry/services/dio.dart';
 import 'package:laundry/model/client.dart';
 
 class LSAuthService extends ChangeNotifier {
-  bool _isLoggedIn = false;
+  bool _isLoggedIn = appStore.isSignedIn;
   User? _user;
   Client? _client;
   String? _token;
@@ -13,6 +15,8 @@ class LSAuthService extends ChangeNotifier {
   bool get authenticated => _isLoggedIn;
   User? get user => _user;
   Client? get client => _client;
+
+  final storage = FlutterSecureStorage();
 
   Future<void> login({Map? creds}) async{
     try {
@@ -29,12 +33,13 @@ class LSAuthService extends ChangeNotifier {
 
   Future<void> register({Map? creds}) async {
     try {
-      Dio.Response response1 = await dio().post('/CreateUser', data: creds);
-      final user = response1.data['user'];
-      final client = response1.data['client'];
-      this._client = Client.fromJson(client);
-      this._user = User.fromJson(user);
-      this._isLoggedIn = true;
+      await dio().post('/CreateUser', data: creds);
+      Map credsSignin = {
+        'phone': creds!['phone'],
+        'password': creds['password'],
+        'device_name': creds['device_name']
+      };
+      this.login(creds: credsSignin);
       notifyListeners();
     } on Exception catch (e) {
       print(e);
@@ -66,12 +71,14 @@ class LSAuthService extends ChangeNotifier {
             options: Dio.Options(headers: {'Authorization' : 'Bearer $token'}));
 
         this._isLoggedIn = true;
+        appStore.toggleSignInStatus(value: _isLoggedIn);
         this._user = User.fromJson(response.data);
 
         // Ensure the userID is treated as a string
         String userID = response.data['id'].toString();
         this.retrieveClient(userID: userID, token: token);
-
+        this._token = token;
+        this.storeToken(token: token);
         notifyListeners();
 
         print('Client: $_client');
@@ -83,8 +90,27 @@ class LSAuthService extends ChangeNotifier {
   }
 
 
-  void logout() {
-    _isLoggedIn = false;
-    notifyListeners();
+  void storeToken({String? token}) async {
+    this.storage.write(key: 'token', value: token);
+  }
+
+  Future<void> logout() async {
+    try {
+      await dio().get('/user/revoke',
+          options: Dio.Options(headers: {'Authorization' : 'Bearer $_token'}));
+      cleanUp();
+      notifyListeners();
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  void cleanUp() async {
+    this._user = null;
+    this._client = null;
+    this._isLoggedIn = false;
+    appStore.isSignedIn = this._isLoggedIn;
+    this._token = null;
+    await storage.delete(key: 'token');
   }
 }

@@ -1,5 +1,6 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:laundry/components/LSNavBar.dart';
 import 'package:laundry/localDB/LSCartProvider.dart';
 import 'package:laundry/fragments/LSCartFragment.dart';
@@ -25,6 +26,7 @@ class LSHomeFragment extends StatefulWidget {
 
 class LSHomeFragmentState extends State<LSHomeFragment> {
   int _selectedIndex = 0;
+  final storage = FlutterSecureStorage();
 
   @override
   void initState() {
@@ -33,6 +35,16 @@ class LSHomeFragmentState extends State<LSHomeFragment> {
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       setState(() {});
     });
+    readToken();
+  }
+
+  void readToken() async {
+    try {
+      String? token = await storage.read(key: 'token');
+      Provider.of<LSAuthService>(context, listen: false).tryToken(token: token);
+    } on Exception catch (e) {
+      print(e);
+    }
   }
 
   init() async {

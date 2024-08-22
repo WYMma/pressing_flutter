@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:laundry/main.dart';
+import 'package:laundry/model/LSCreditCardWidget.dart';
 import 'package:laundry/utils/LSColors.dart';
-import '../../../model/LSCreditCardWidget.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:nb_utils/nb_utils.dart';
 import 'package:u_credit_card/u_credit_card.dart';
@@ -20,89 +20,116 @@ class _LSEditPaymentMethodState extends State<LSEditPaymentMethod> {
   final TextEditingController cardNumberController = TextEditingController();
   final TextEditingController cardHolderController = TextEditingController();
   final TextEditingController expiryDateController = TextEditingController();
+  final TextEditingController cvvController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-
     final cardDetails = LSCreditCardWidget.savedPaymentMethods.firstWhere(
-            (card) => card['number'] == widget.cardNumber,
-        orElse: () => {});
+          (card) => card['number'] == widget.cardNumber,
+      orElse: () => {},
+    );
 
     cardNumberController.text = cardDetails['number'] ?? '';
     cardHolderController.text = cardDetails['holder'] ?? '';
     expiryDateController.text = cardDetails['expiry'] ?? '';
+    cvvController.text = cardDetails['cvv'] ?? '';
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: appBarWidget('Modifier', center: true, color: context.cardColor),
+      appBar: AppBar(
+        title: Text('Modifier'),
+        centerTitle: true,
+        backgroundColor: context.cardColor,
+      ),
       backgroundColor: appStore.isDarkModeOn ? context.scaffoldBackgroundColor : LSColorSecondary,
       body: SingleChildScrollView(
-        child: Padding(
-          padding: EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              CreditCardUi(
-                cardHolderFullName: cardHolderController.text,
-                cardNumber: cardNumberController.text,
-                validThru: expiryDateController.text,
-                topLeftColor: Colors.blue,
-                bottomRightColor: Colors.black,
-                doesSupportNfc: true,
-                showValidFrom: false,
-                cardType: CardType.credit,
-              ).center(),
-              SizedBox(height: 50),
-              TextFormField(
-                controller: cardNumberController,
-                decoration: InputDecoration(
-                  labelText: 'Numéro de carte',
-                  labelStyle: TextStyle(color: Theme.of(context).textTheme.bodyLarge!.color), // Adjusted for dark mode
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.blue), // Border color when focused
-                  ),
-                  hintText: 'Entrez le numéro de votre carte',
-                  prefixIcon: Icon(Icons.credit_card, color: Theme.of(context).iconTheme.color), // Adjusted for dark mode
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+        padding: EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            CreditCardUi(
+              cardHolderFullName: cardHolderController.text,
+              cardNumber: cardNumberController.text,
+              validThru: expiryDateController.text,
+              topLeftColor: Colors.blue,
+              bottomRightColor: Colors.black,
+              doesSupportNfc: true,
+              showValidFrom: false,
+              cardType: CardType.credit,
+            ).center(),
+            SizedBox(height: 50),
+            TextFormField(
+              controller: cardNumberController,
+              decoration: InputDecoration(
+                labelText: 'Numéro de carte',
+                labelStyle: TextStyle(color: Theme.of(context).textTheme.bodyLarge!.color),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.blue),
                 ),
-                onChanged: (value) => setState(() {}),
+                hintText: 'Entrez le numéro de votre carte',
+                prefixIcon: Icon(Icons.credit_card, color: Theme.of(context).iconTheme.color),
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
               ),
-              SizedBox(height: 16),
-              TextField(
-                controller: cardHolderController,
-                decoration: InputDecoration(
-                  labelText: 'Titulaire de la carte',
-                  labelStyle: TextStyle(color: Theme.of(context).textTheme.bodyLarge!.color), // Adjusted for dark mode
-                  hintText: 'Entrez le nom du titulaire de la carte',
-                  prefixIcon: Icon(Icons.person, color: Theme.of(context).iconTheme.color), // Adjusted for dark mode
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.blue), // Border color when focused
+              onChanged: (value) => setState(() {}),
+            ),
+            SizedBox(height: 16),
+            TextField(
+              controller: cardHolderController,
+              decoration: InputDecoration(
+                labelText: 'Titulaire de la carte',
+                labelStyle: TextStyle(color: Theme.of(context).textTheme.bodyLarge!.color),
+                hintText: 'Entrez le nom du titulaire de la carte',
+                prefixIcon: Icon(Icons.person, color: Theme.of(context).iconTheme.color),
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.blue),
+                ),
+              ),
+              onChanged: (value) => setState(() {}),
+            ),
+            SizedBox(height: 16),
+            Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: expiryDateController,
+                    decoration: InputDecoration(
+                      labelText: 'EXP (MM/YY)',
+                      labelStyle: TextStyle(color: Theme.of(context).textTheme.bodyLarge!.color),
+                      hintText: 'Entrez la date d\'expiration',
+                      prefixIcon: Icon(Icons.date_range, color: Theme.of(context).iconTheme.color),
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.blue),
+                      ),
+                    ),
+                    onChanged: (value) => setState(() {}),
                   ),
                 ),
-                onChanged: (value) => setState(() {}),
-              ),
-              SizedBox(height: 16),
-              TextField(
-                controller: expiryDateController,
-                decoration: InputDecoration(
-                  labelText: 'Date d\'expiration (MM/YY)',
-                  labelStyle: TextStyle(color: Theme.of(context).textTheme.bodyLarge!.color), // Adjusted for dark mode
-                  hintText: 'Entrez la date d\'expiration',
-                  prefixIcon: Icon(Icons.date_range, color: Theme.of(context).iconTheme.color), // Adjusted for dark mode
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.blue), // Border color when focused
+                SizedBox(width: 16),
+                Expanded(
+                  child: TextField(
+                    controller: cvvController,
+                    decoration: InputDecoration(
+                      labelText: 'CVV',
+                      labelStyle: TextStyle(color: Theme.of(context).textTheme.bodyLarge!.color),
+                      hintText: 'Entrez le CVV',
+                      prefixIcon: Icon(Icons.security, color: Theme.of(context).iconTheme.color),
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.blue),
+                      ),
+                    ),
+                    onChanged: (value) => setState(() {}),
                   ),
                 ),
-                onChanged: (value) => setState(() {}),
-              ),
-              SizedBox(height: 24),
-            ],
-          ).paddingTop(16),
+              ],
+            ),
+            SizedBox(height: 24),
+          ],
         ),
       ),
       bottomNavigationBar: Container(
@@ -135,6 +162,7 @@ class _LSEditPaymentMethodState extends State<LSEditPaymentMethod> {
     String cardNumber = cardNumberController.text.trim();
     String cardHolder = cardHolderController.text.trim();
     String expiryDate = expiryDateController.text.trim();
+    String cvv = cvvController.text.trim();
 
     if (cardNumber.isNotEmpty && cardHolder.isNotEmpty && expiryDate.isNotEmpty) {
       // Find the card and update the details
@@ -143,6 +171,7 @@ class _LSEditPaymentMethodState extends State<LSEditPaymentMethod> {
           card['number'] = cardNumber;
           card['holder'] = cardHolder;
           card['expiry'] = expiryDate;
+          card['cvv'] = cvv;
           break;
         }
       }

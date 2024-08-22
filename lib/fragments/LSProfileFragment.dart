@@ -1,9 +1,7 @@
-import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:laundry/components/LSNavBar.dart';
 import 'package:laundry/localDB/LSCartProvider.dart';
 import 'package:laundry/fragments/LSCartFragment.dart';
@@ -29,47 +27,7 @@ class LSProfileFragment extends StatefulWidget {
 class LSProfileFragmentState extends State<LSProfileFragment> {
   bool isNotificationsEnabled = appStore.isNotificationsEnabled;
   bool isSignedIn = appStore.isSignedIn;
-  File? _image;
   int _selectedIndex = 4;
-
-  Future<void> _pickImage(ImageSource source) async {
-    final picker = ImagePicker();
-    final pickedFile = await picker.pickImage(source: source);
-
-    if (pickedFile != null) {
-      setState(() {
-        _image = File(pickedFile.path);
-      });
-    }
-  }
-
-  void _showImagePickerOptions(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      builder: (context) => SafeArea(
-        child: Wrap(
-          children: <Widget>[
-            ListTile(
-              leading: const Icon(Icons.photo_library),
-              title: const Text('Gallery'),
-              onTap: () {
-                Navigator.of(context).pop();
-                _pickImage(ImageSource.gallery);
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.photo_camera),
-              title: const Text('Camera'),
-              onTap: () {
-                Navigator.of(context).pop();
-                _pickImage(ImageSource.camera);
-              },
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 
   @override
   void initState() {
@@ -128,16 +86,13 @@ class LSProfileFragmentState extends State<LSProfileFragment> {
                 builder: (context, authService, child) {
                   return Column(
                     children: [
-                      GestureDetector(
-                        onTap: () => _showImagePickerOptions(context),
-                        child: CircleAvatar(
+                      CircleAvatar(
                           radius: 60,
                           backgroundColor: Colors.red,
                           backgroundImage: CachedNetworkImageProvider(
                             authService.user!.avatar,
                           ),
                         ),
-                      ),
                       const SizedBox(height: 10),
                       Text(
                         '${authService.client!.first_name} ${authService.client!.last_name}',
@@ -204,14 +159,15 @@ class LSProfileFragmentState extends State<LSProfileFragment> {
             context,
             title: "Déconnexion",
             icon: CupertinoIcons.arrow_right_arrow_left,
-            onTap: () {
-              isSignedIn = false;
-              appStore.toggleSignInStatus(value: isSignedIn);
-              Fluttertoast.showToast(msg: "Déconnexion réussie");
+            onTap: () async {
+              context.read<LSCartProvider>().clearCart();
               Navigator.of(context).pushAndRemoveUntil(
                 MaterialPageRoute(builder: (context) => LSSignInScreen()),
                     (Route<dynamic> route) => false,
               );
+              var authService = Provider.of<LSAuthService>(context, listen: false);
+              await authService.logout();
+              Fluttertoast.showToast(msg: "Déconnexion réussie");
             },
           ),
         ],

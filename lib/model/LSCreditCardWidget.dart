@@ -10,15 +10,16 @@ class LSCreditCardWidget extends StatefulWidget {
   _LSCreditCardWidgetState createState() => _LSCreditCardWidgetState();
 
   static List<Map<String, String>> savedPaymentMethods = [
-    {'number': '1234567812345678', 'holder': 'John Doe', 'expiry': '12/24'},
-    {'number': '8765432187654321', 'holder': 'Jane Smith', 'expiry': '01/25'},
+    {'number': '1234567812345678', 'holder': 'John Doe', 'expiry': '12/24', 'cvv': '123'},
+    {'number': '8765432187654321', 'holder': 'Jane Smith', 'expiry': '01/25', 'cvv': '456'},
   ];
 
-  static void addPaymentMethod(String cardNumber, String cardHolder, String expiryDate) {
+  static void addPaymentMethod(String cardNumber, String cardHolder, String expiryDate, String cvv) {
     savedPaymentMethods.add({
       'number': cardNumber,
       'holder': cardHolder,
       'expiry': expiryDate,
+      'cvv': cvv,
     });
   }
 
@@ -26,12 +27,13 @@ class LSCreditCardWidget extends StatefulWidget {
     savedPaymentMethods.removeWhere((element) => element['number'] == cardNumber);
   }
 
-  static void editPaymentMethod(String oldCardNumber, String newCardNumber, String cardHolder, String expiryDate) {
+  static void editPaymentMethod(String oldCardNumber, String newCardNumber, String cardHolder, String expiryDate, String cvv) {
     for (var card in savedPaymentMethods) {
       if (card['number'] == oldCardNumber) {
         card['number'] = newCardNumber;
         card['holder'] = cardHolder;
         card['expiry'] = expiryDate;
+        card['cvv'] = cvv;
         break;
       }
     }
@@ -49,6 +51,7 @@ class _LSCreditCardWidgetState extends State<LSCreditCardWidget> {
         String cardNumber = LSCreditCardWidget.savedPaymentMethods[index]['number']!;
         String cardHolder = LSCreditCardWidget.savedPaymentMethods[index]['holder']!;
         String expiryDate = LSCreditCardWidget.savedPaymentMethods[index]['expiry']!;
+        String cvv = LSCreditCardWidget.savedPaymentMethods[index]['cvv']!;
         return GestureDetector(
           onLongPress: () {
             setState(() {
@@ -71,6 +74,7 @@ class _LSCreditCardWidgetState extends State<LSCreditCardWidget> {
               bottomRightColor: selectedPaymentMethod == cardNumber ? Colors.black : Colors.grey.shade300,
               doesSupportNfc: true,
               showValidFrom: false,
+              cvvNumber: cvv,
               cardType: CardType.credit,
             ),
           ),

@@ -17,7 +17,6 @@ import '../screens/LSNotificationsScreen.dart';
 import '../screens/Profile/Addresse/LSSavedAddressesScreen.dart';
 import '../screens/Profile/Paiement/LSSavedPaymentMethodsScreen.dart';
 import '../screens/Profile/LSSettings.dart';
-import '../utils/LSImages.dart';
 import '../utils/LSColors.dart';
 
 class LSProfileFragment extends StatefulWidget {
@@ -135,15 +134,8 @@ class LSProfileFragmentState extends State<LSProfileFragment> {
                           radius: 60,
                           backgroundColor: Colors.red,
                           backgroundImage: CachedNetworkImageProvider(
-                            authService.user!.avatar ?? LSAvatar,
+                            authService.user!.avatar,
                           ),
-                          child: authService.user!.avatar == null
-                              ? const Icon(
-                            Icons.person,
-                            size: 50,
-                            color: Colors.white,
-                          )
-                              : null,
                         ),
                       ),
                       const SizedBox(height: 10),

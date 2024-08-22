@@ -175,7 +175,7 @@ class LSSignInScreenState extends State<LSSignInScreen> {
                                   if (value == null || value.isEmpty) {
                                     return 'Le CIN est requis';
                                   }
-                                  if (!isCINValid(value!)) {
+                                  if (!isCINValid(value)) {
                                     return 'Le CIN doit contenir exactement 8 chiffres';
                                   }
                                   return null;
@@ -191,7 +191,7 @@ class LSSignInScreenState extends State<LSSignInScreen> {
                               if (value == null || value.isEmpty) {
                                 return 'Le numéro de téléphone est requis';
                               }
-                              if (!isPhoneValid(value!)) {
+                              if (!isPhoneValid(value)) {
                                 return 'Numéro de téléphone invalide';
                               }
                               return null;
@@ -206,7 +206,7 @@ class LSSignInScreenState extends State<LSSignInScreen> {
                               if (value == null || value.isEmpty) {
                                 return 'Le mot de passe est requis';
                               }
-                              if (!isPasswordValid(value!)) {
+                              if (!isPasswordValid(value)) {
                                 if(isSignUp) {
                                   return 'Le mot de passe doit contenir au \nmoins 8 caractères avec au moins un chiffre, \nune lettre majuscule et une lettre minuscule';
                                 }

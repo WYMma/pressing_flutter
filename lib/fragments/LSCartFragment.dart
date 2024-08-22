@@ -1,14 +1,16 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:laundry/components/LSNavBar.dart';
 import 'package:laundry/main.dart';
+import 'package:laundry/model/LSNotificationsModel.dart';
 import 'package:laundry/model/LSOrder.dart';
 import 'package:laundry/screens/LSNotificationsScreen.dart';
 import 'package:laundry/screens/LSSchedule/LSScheduleScreen.dart';
 import 'package:laundry/utils/LSColors.dart';
 import 'package:nb_utils/nb_utils.dart';
 import 'package:provider/provider.dart';
-import 'package:laundry/db/LSCartProvider.dart';
-import 'package:laundry/db/LSDBHelper.dart';
+import 'package:laundry/localDB/LSCartProvider.dart';
+import 'package:laundry/localDB/LSDBHelper.dart';
 import 'package:laundry/model/LSCartModel.dart';
 
 class LSCartFragment extends StatefulWidget {
@@ -18,6 +20,14 @@ class LSCartFragment extends StatefulWidget {
 
 class _LSCartFragmentState extends State<LSCartFragment> {
   int _selectedIndex = 2;
+
+  @override
+  void initState() {
+    super.initState();
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      setState(() {});
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,13 +41,18 @@ class _LSCartFragmentState extends State<LSCartFragment> {
         showBack: false,
         color: context.cardColor,
         actions: [
-          IconButton(
-            icon: Icon(Icons.notifications),
-            color: context.iconColor,
-            onPressed: () {
+          InkWell(
+            onTap: () {
               LSNotificationsScreen().launch(context);
             },
+            child: Center(
+              child: Badge(
+                label: Text(LSNotificationsModel.unreadCount.toString(), style: TextStyle(color: Colors.white)),
+                child: Icon(LSNotificationsModel.unreadCount == 0 ? Icons.notifications_none : Icons.notifications, color: context.iconColor),
+              ),
+            ),
           ),
+          SizedBox(width: 10.0),
           InkWell(
             onTap: () {},
             child: Center(

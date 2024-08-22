@@ -210,6 +210,7 @@ class _LSEditAddressScreenState extends State<LSEditAddressScreen> {
             LSAddressModel.editAddress(
               widget.address,
               LSAddressModel(
+                id: widget.address.id,
                 area: areaCont.text,
                 street: streetCont.text,
                 city: cityCont.text,

@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 
 class LSAddressModel {
+  final int id;
   final String area;
   final String street;
   final String city;
@@ -8,6 +9,7 @@ class LSAddressModel {
   final String type;
 
   LSAddressModel({
+    required this.id,
     required this.area,
     required this.street,
     required this.city,
@@ -17,6 +19,7 @@ class LSAddressModel {
 
   static List<LSAddressModel> savedAddresses = [
     LSAddressModel(
+      id: 1,
       area: 'Phase 5, Sector 59, Mohali',
       street: 'Plot no. F-126, First Floor, Phase 8b, Industrial Area Mohali',
       city: 'Mohali',
@@ -24,6 +27,7 @@ class LSAddressModel {
       type: 'Travail',
     ),
     LSAddressModel(
+      id: 2,
       area: 'Phase 5, Sector 59, Mohali',
       street: 'Plot no. F-126, First Floor, Phase 8b, Industrial Area Mohali',
       city: 'Mohali',

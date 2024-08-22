@@ -1,7 +1,7 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:laundry/components/LSNavBar.dart';
-import 'package:laundry/db/LSCartProvider.dart';
+import 'package:laundry/localDB/LSCartProvider.dart';
 import 'package:laundry/fragments/LSCartFragment.dart';
 import 'package:laundry/main.dart';
 import 'package:laundry/model/LSNotificationsModel.dart';
@@ -36,12 +36,16 @@ class _LSNotificationsScreenState extends State<LSNotificationsScreen> {
         center: true,
         color: context.cardColor,
         actions: [
-          IconButton(
-            icon: Icon(Icons.notifications_none),
-            color: context.iconColor,
-            onPressed: () {
-            },
+          InkWell(
+            onTap: () {},
+            child: Center(
+              child: Badge(
+                label: Text(LSNotificationsModel.unreadCount.toString(), style: TextStyle(color: Colors.white)),
+                child: Icon(LSNotificationsModel.unreadCount == 0 ? Icons.notifications_none : Icons.notifications, color: context.iconColor),
+              ),
+            ),
           ),
+          SizedBox(width: 10.0),
           InkWell(
             onTap: () {
               Navigator.push(
@@ -74,14 +78,15 @@ class _LSNotificationsScreenState extends State<LSNotificationsScreen> {
           : ListView.separated(
         padding: EdgeInsets.symmetric(vertical: 8),
         itemBuilder: (context, index) {
-          RemoteMessage message = LSNotificationsModel.notifications[LSNotificationsModel.notifications.length - 1 - index].message;
-          bool isRead = LSNotificationsModel.notifications[LSNotificationsModel.notifications.length - 1 - index].isRead;
+          RemoteMessage message = LSNotificationsModel.notifications[index].message;
+          bool isRead = LSNotificationsModel.notifications[index].isRead;
 
           return GestureDetector(
             onTap: () => {
-              LSNotificationsModel.notifications[LSNotificationsModel.notifications.length - 1 - index].setIsRead(),
-              setState(() {
-            })},
+              if (!LSNotificationsModel.notifications[index].isRead) {
+              LSNotificationsModel.notifications[index].setIsRead(),
+              setState(() {})}
+            },
             child: Card(
               margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               elevation: 4,

@@ -1,12 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:laundry/db/LSCartProvider.dart';
-import 'package:laundry/fragments/LSCartFragment.dart';
 import 'package:laundry/main.dart';
-import 'package:laundry/screens/LSNotificationsScreen.dart';
 import 'package:laundry/utils/LSColors.dart';
 import 'package:nb_utils/nb_utils.dart';
 import 'package:coupon_uikit/coupon_uikit.dart';
-import 'package:provider/provider.dart';
 
 class LSCoupon extends StatelessWidget {
   const LSCoupon({Key? key}) : super(key: key);
@@ -14,40 +10,7 @@ class LSCoupon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: appBarWidget('Coupon', center: true, color: context.cardColor,
-          actions: [
-        IconButton(
-          icon: Icon(Icons.notifications),
-          color: context.iconColor,
-          onPressed: () {
-            LSNotificationsScreen().launch(context);
-          },
-        ),
-        InkWell(
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => LSCartFragment(),
-              ),
-            );
-          },
-          child: Center(
-            child: Badge(
-              label: Consumer<LSCartProvider>(
-                builder: (context, value, child) {
-                  return Text(
-                    value.getCounter().toString(),
-                    style: TextStyle(color: Colors.white),
-                  );
-                },
-              ),
-              child: Icon(Icons.shopping_cart, color: context.iconColor),
-            ),
-          ),
-        ),
-        SizedBox(width: 20.0),
-      ]),
+      appBar: appBarWidget('Coupon', center: true, color: context.cardColor),
       backgroundColor: appStore.isDarkModeOn ? context.scaffoldBackgroundColor : LSColorSecondary,
       body: Padding(
         padding: const EdgeInsets.all(45),

@@ -196,6 +196,7 @@ class LSAddAddressScreenState extends State<LSAddAddressScreen> {
             // Logic to save the address
             LSAddressModel.addAddress(
               LSAddressModel(
+                id: LSAddressModel.savedAddresses.length + 1,
                 area: areaCont.text,
                 street: streetCont.text,
                 city: cityCont.text,

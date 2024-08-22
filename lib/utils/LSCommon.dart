@@ -32,3 +32,13 @@ InputDecoration inputDecoration(BuildContext context, {String? hint, Widget? suf
     ),
   );
 }
+
+void showToast(BuildContext context, String message, {bool isError = false}) {
+  Fluttertoast.showToast(
+    msg: message,
+    toastLength: Toast.LENGTH_SHORT,
+    gravity: ToastGravity.BOTTOM,
+    backgroundColor: isError ? Colors.red : Colors.green,
+    textColor: Colors.white,
+  );
+}

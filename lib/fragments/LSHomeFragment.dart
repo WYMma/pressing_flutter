@@ -1,8 +1,11 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:laundry/components/LSNavBar.dart';
-import 'package:laundry/db/LSCartProvider.dart';
+import 'package:laundry/localDB/LSCartProvider.dart';
 import 'package:laundry/fragments/LSCartFragment.dart';
 import 'package:laundry/fragments/LSOfferFragment.dart';
+import 'package:laundry/model/LSNotificationsModel.dart';
+import 'package:laundry/services/LSAuthService.dart';
 import 'package:laundry/utils/LSColors.dart';
 import 'package:nb_utils/nb_utils.dart';
 import 'package:provider/provider.dart';
@@ -20,13 +23,16 @@ class LSHomeFragment extends StatefulWidget {
   LSHomeFragmentState createState() => LSHomeFragmentState();
 }
 
-class LSHomeFragmentState extends State<LSHomeFragment> with AutomaticKeepAliveClientMixin {
+class LSHomeFragmentState extends State<LSHomeFragment> {
   int _selectedIndex = 0;
 
   @override
   void initState() {
     super.initState();
     init();
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      setState(() {});
+    });
   }
 
   init() async {
@@ -43,17 +49,16 @@ class LSHomeFragmentState extends State<LSHomeFragment> with AutomaticKeepAliveC
     final now = DateTime.now();
 
     if (now.hour < 12) {
-      return 'Bonjour, \nYassin Manita';
+      return 'Bonjour,';
     } else if (now.hour < 18) {
-      return 'Bon après-midi, \nYassin Manita';
+      return 'Bon après-midi,';
     } else {
-      return 'Bonsoir, \nYassin Manita';
+      return 'Bonsoir,';
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    super.build(context); // Needed when using AutomaticKeepAliveClientMixin
     return Scaffold(
       appBar: AppBar(
         backgroundColor: appStore.isDarkModeOn ? context.cardColor : LSColorPrimary,
@@ -64,19 +69,28 @@ class LSHomeFragmentState extends State<LSHomeFragment> with AutomaticKeepAliveC
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Expanded(
-                child: Text(
-                  welcometext(),
-                  style: boldTextStyle(color: white, size: 20),
-                  maxLines: 2,
+                child: Consumer<LSAuthService>(
+                  builder: (context, authService, child) {
+                    return Text(
+                      welcometext() + '\n' + authService.client!.first_name + ' ' + authService.client!.last_name,
+                      style: boldTextStyle(color: white, size: 20),
+                      maxLines: 2,
+                    );
+                  },
                 ),
               ),
-              IconButton(
-                icon: Icon(Icons.notifications),
-                color: context.iconColor,
-                onPressed: () {
+              InkWell(
+                onTap: () {
                   LSNotificationsScreen().launch(context);
                 },
+                child: Center(
+                  child: Badge(
+                    label: Text(LSNotificationsModel.unreadCount.toString(), style: TextStyle(color: Colors.white)),
+                    child: Icon(LSNotificationsModel.unreadCount == 0 ? Icons.notifications_none : Icons.notifications, color: context.iconColor),
+                  ),
+                ),
               ),
+              SizedBox(width: 10.0),
               InkWell(
                 onTap: () {
                   LSCartFragment().launch(context);
@@ -144,7 +158,4 @@ class LSHomeFragmentState extends State<LSHomeFragment> with AutomaticKeepAliveC
       bottomNavigationBar: LSNavBar(selectedIndex: _selectedIndex),
     );
   }
-
-  @override
-  bool get wantKeepAlive => true;
 }

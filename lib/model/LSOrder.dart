@@ -16,6 +16,7 @@ class LSOrder {
   String deliveryType;
   DateTime confirmationTimestamp;
   String? status;
+  String? cartID;
   List<LSCartModel> cartItems;
   double totalPrice;
   bool isConfirmed;

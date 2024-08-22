@@ -4,8 +4,7 @@ import 'package:laundry/utils/LSColors.dart';
 import 'package:laundry/utils/LSImages.dart';
 import 'package:laundry/utils/LSWidgets.dart';
 import 'package:nb_utils/nb_utils.dart';
-
-import 'LSResetPasswordScreen.dart';
+import 'package:laundry/screens/resetPassword/LSResetPasswordScreen.dart';
 
 class LSOtpScreen extends StatefulWidget {
   static String tag = '/LSOtpScreen';

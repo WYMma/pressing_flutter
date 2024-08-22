@@ -1,13 +1,16 @@
 import 'dart:io';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:laundry/components/LSNavBar.dart';
-import 'package:laundry/db/LSCartProvider.dart';
+import 'package:laundry/localDB/LSCartProvider.dart';
 import 'package:laundry/fragments/LSCartFragment.dart';
+import 'package:laundry/model/LSNotificationsModel.dart';
 import 'package:laundry/screens/LSSignInScreen.dart';
+import 'package:laundry/services/LSAuthService.dart';
 import 'package:nb_utils/nb_utils.dart';
-import 'package:avatar_view/avatar_view.dart';
 import 'package:provider/provider.dart';
 import '../main.dart';
 import '../screens/LSNotificationsScreen.dart';
@@ -24,7 +27,7 @@ class LSProfileFragment extends StatefulWidget {
   LSProfileFragmentState createState() => LSProfileFragmentState();
 }
 
-class LSProfileFragmentState extends State<LSProfileFragment> with AutomaticKeepAliveClientMixin {
+class LSProfileFragmentState extends State<LSProfileFragment> {
   bool isNotificationsEnabled = appStore.isNotificationsEnabled;
   bool isSignedIn = appStore.isSignedIn;
   File? _image;
@@ -70,16 +73,29 @@ class LSProfileFragmentState extends State<LSProfileFragment> with AutomaticKeep
   }
 
   @override
+  void initState() {
+    super.initState();
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      setState(() {});
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: appBarWidget('Profile', center: true, color: context.cardColor, showBack: false,actions: [
-        IconButton(
-          icon: Icon(Icons.notifications),
-          color: context.iconColor,
-          onPressed: () {
+      appBar: appBarWidget('Profile', center: true, color: context.cardColor, showBack: false, actions: [
+        InkWell(
+          onTap: () {
             LSNotificationsScreen().launch(context);
           },
+          child: Center(
+            child: Badge(
+              label: Text(LSNotificationsModel.unreadCount.toString(), style: const TextStyle(color: Colors.white)),
+              child: Icon(LSNotificationsModel.unreadCount == 0 ? Icons.notifications_none : Icons.notifications, color: context.iconColor),
+            ),
+          ),
         ),
+        const SizedBox(width: 10.0),
         InkWell(
           onTap: () {
             Navigator.push(
@@ -93,7 +109,7 @@ class LSProfileFragmentState extends State<LSProfileFragment> with AutomaticKeep
                 builder: (context, value, child) {
                   return Text(
                     value.getCounter().toString(),
-                    style: TextStyle(color: Colors.white),
+                    style: const TextStyle(color: Colors.white),
                   );
                 },
               ),
@@ -101,7 +117,7 @@ class LSProfileFragmentState extends State<LSProfileFragment> with AutomaticKeep
             ),
           ),
         ),
-        SizedBox(width: 20.0),
+        const SizedBox(width: 20.0),
       ]),
       backgroundColor: appStore.isDarkModeOn ? context.scaffoldBackgroundColor : LSColorSecondary,
       body: ListView(
@@ -109,38 +125,40 @@ class LSProfileFragmentState extends State<LSProfileFragment> with AutomaticKeep
         children: [
           Column(
             children: [
-              GestureDetector(
-                onTap: () => _showImagePickerOptions(context),
-                child: AvatarView(
-                  radius: 60,
-                  borderColor: Colors.yellow,
-                  isOnlyText: false,
-                  text: const Text(
-                    'C',
-                    style: TextStyle(color: Colors.white, fontSize: 50),
-                  ),
-                  avatarType: AvatarType.CIRCLE,
-                  backgroundColor: Colors.red,
-                  imagePath: _image?.path ?? LSAvatar,
-                  placeHolder: const Icon(
-                    Icons.person,
-                    size: 50,
-                  ),
-                  errorWidget: const Icon(
-                    Icons.error,
-                    size: 50,
-                  ),
-                ),
+              Consumer<LSAuthService>(
+                builder: (context, authService, child) {
+                  return Column(
+                    children: [
+                      GestureDetector(
+                        onTap: () => _showImagePickerOptions(context),
+                        child: CircleAvatar(
+                          radius: 60,
+                          backgroundColor: Colors.red,
+                          backgroundImage: CachedNetworkImageProvider(
+                            authService.user!.avatar ?? LSAvatar,
+                          ),
+                          child: authService.user!.avatar == null
+                              ? const Icon(
+                            Icons.person,
+                            size: 50,
+                            color: Colors.white,
+                          )
+                              : null,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      Text(
+                        '${authService.client!.first_name} ${authService.client!.last_name}',
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Text(authService.user!.role),
+                    ],
+                  );
+                },
               ),
-              const SizedBox(height: 10),
-              const Text(
-                "Yassin Manita",
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const Text("Client"),
             ],
           ).paddingTop(16),
           const SizedBox(height: 35),
@@ -209,10 +227,6 @@ class LSProfileFragmentState extends State<LSProfileFragment> with AutomaticKeep
       bottomNavigationBar: LSNavBar(selectedIndex: _selectedIndex),
     );
   }
-
-  @override
-  bool get wantKeepAlive => true;
-
 }
 
 Widget buildProfileItem(BuildContext context,
@@ -239,4 +253,4 @@ Widget buildProfileItem(BuildContext context,
       ),
     ),
   );
-}//
+}

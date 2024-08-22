@@ -1,8 +1,10 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:laundry/components/LSNavBar.dart';
-import 'package:laundry/db/LSCartProvider.dart';
+import 'package:laundry/localDB/LSCartProvider.dart';
 import 'package:laundry/fragments/LSCartFragment.dart';
 import 'package:laundry/main.dart';
+import 'package:laundry/model/LSNotificationsModel.dart';
 import 'package:laundry/model/LSServiceModel.dart';
 import 'package:laundry/screens/LSCoupon.dart';
 import 'package:laundry/utils/LSColors.dart';
@@ -18,7 +20,7 @@ class LSOfferFragment extends StatefulWidget {
   LLSOfferFragmentState createState() => LLSOfferFragmentState();
 }
 
-class LLSOfferFragmentState extends State<LSOfferFragment> with AutomaticKeepAliveClientMixin {
+class LLSOfferFragmentState extends State<LSOfferFragment> {
 
   int _selectedIndex = 1;
 
@@ -26,6 +28,9 @@ class LLSOfferFragmentState extends State<LSOfferFragment> with AutomaticKeepAli
   void initState() {
     super.initState();
     init();
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      setState(() {});
+    });
   }
 
   init() async {
@@ -52,13 +57,18 @@ class LLSOfferFragmentState extends State<LSOfferFragment> with AutomaticKeepAli
         showBack: false,
         color: context.cardColor,
         actions: [
-          IconButton(
-            icon: Icon(Icons.notifications),
-            color: context.iconColor,
-            onPressed: () {
+          InkWell(
+            onTap: () {
               LSNotificationsScreen().launch(context);
             },
+            child: Center(
+              child: Badge(
+                label: Text(LSNotificationsModel.unreadCount.toString(), style: TextStyle(color: Colors.white)),
+                child: Icon(LSNotificationsModel.unreadCount == 0 ? Icons.notifications_none : Icons.notifications, color: context.iconColor),
+              ),
+            ),
           ),
+          SizedBox(width: 10.0),
           InkWell(
             onTap: () {
               Navigator.push(
@@ -127,6 +137,4 @@ class LLSOfferFragmentState extends State<LSOfferFragment> with AutomaticKeepAli
     );
   }
 
-  @override
-  bool get wantKeepAlive => true;
 }

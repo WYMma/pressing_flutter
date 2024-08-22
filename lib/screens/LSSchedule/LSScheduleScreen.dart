@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:laundry/components/LSAddressListComponent.dart';
-import 'package:laundry/db/LSCartProvider.dart';
+import 'package:laundry/localDB/LSCartProvider.dart';
 import 'package:laundry/fragments/LSHomeFragment.dart';
 import 'package:laundry/screens/LSSchedule/LSCompleteComponent.dart';
 import 'package:laundry/screens/LSSchedule/LSDateTimeComponent.dart';
@@ -8,7 +8,7 @@ import 'package:laundry/screens/LSSchedule/LSPaymentMethodComponent.dart';
 import 'package:laundry/services/LSLocalAuthService.dart';
 import 'package:nb_utils/nb_utils.dart';
 import 'package:provider/provider.dart';
-import 'package:laundry/db/LSDBHelper.dart';
+import 'package:laundry/localDB/LSDBHelper.dart';
 
 import '../../main.dart';
 import '../../model/LSOrder.dart';

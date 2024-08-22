@@ -36,7 +36,7 @@ class FirebaseAPI {
     FirebaseMessaging.onMessage.listen((message) {
       final notification = message.notification;
       if (notification == null) return;
-      LSNotificationsModel.notifications.add(LSNotificationsModel(message: message, isRead: false));
+      LSNotificationsModel.addNotification(message);
       // Match the NotificationDetails settings to LocalNotifications
       const AndroidNotificationDetails androidNotificationDetails =
       AndroidNotificationDetails(

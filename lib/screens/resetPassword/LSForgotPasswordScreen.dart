@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:laundry/screens/LSOtpScreen.dart';
+import 'package:laundry/screens/resetPassword/LSOtpScreen.dart';
 import 'package:laundry/utils/LSColors.dart';
 import 'package:laundry/utils/LSImages.dart';
 import 'package:laundry/utils/LSWidgets.dart';
 import 'package:nb_utils/nb_utils.dart';
 
-import '../main.dart';
+import 'package:laundry/main.dart';
 
 class LSForgotPasswordScreen extends StatefulWidget {
   static String tag = '/LSForgotPasswordScreen';

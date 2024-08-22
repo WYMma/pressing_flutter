@@ -31,7 +31,7 @@ final pages = [
   ),
   const PageData(
     icon: Icons.money_rounded,
-    title: "Payez plus tard et soyez satisfait",
+    title: "Payez plus tard \net soyez satisfait",
     bgColor: Color(0xfffff9c4), // Light Yellow
     textColor: Color(0xff004ba0), // Dark Blue
   ),

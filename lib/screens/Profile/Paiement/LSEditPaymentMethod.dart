@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:laundry/api/LSCreditCardAPI.dart';
+import 'package:laundry/services/api/LSCreditCardAPI.dart';
 import 'package:laundry/main.dart';
-import 'package:laundry/model/LSCreditCardWidget.dart';
+import 'package:laundry/components/LSCreditCardComponent.dart';
 import 'package:laundry/services/LSAuthService.dart';
 import 'package:laundry/utils/LSColors.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -31,7 +31,7 @@ class _LSEditPaymentMethodState extends State<LSEditPaymentMethod> {
   @override
   void initState() {
     super.initState();
-    final cardDetails = LSCreditCardWidget.savedPaymentMethods.firstWhere(
+    final cardDetails = LSCreditCardComponent.savedPaymentMethods.firstWhere(
           (card) => card['cardID'] == widget.cardID,
       orElse: () => {},
     );

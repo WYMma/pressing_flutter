@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:laundry/components/PurchaseMoreScreen.dart';
-import 'package:laundry/screens/LSSchedule/LSScheduleScreen.dart';
+import 'package:laundry/components/LSNavBar.dart';
 import 'package:laundry/screens/ServiceDetail/LSAboutComponent.dart';
 import 'package:laundry/screens/ServiceDetail/LSPriceListComponent.dart';
 import 'package:laundry/screens/ServiceDetail/LSServicesComponent.dart';
@@ -83,34 +82,9 @@ class LSServiceDetailScreenState extends State<LSServiceDetailScreen> {
                                     Text('XPress Laundry Service', style: boldTextStyle(size: 20, color: white)),
                                     4.height,
                                     Text('145 Valencia St, San Francisco, CA 94103', style: secondaryTextStyle(color: white)),
-                                    4.height,
-                                    Row(
-                                      children: [
-                                        RatingBarWidget(
-                                          rating: 2.5,
-                                          size: 20,
-                                          disable: true,
-                                          onRatingChanged: (aRating) {
-                                            // rating = aRating;
-                                          },
-                                        ),
-                                        4.width,
-                                        Text('(90 Reviews)', style: secondaryTextStyle(color: white)),
-                                      ],
-                                    )
+                                    16.height,
                                   ],
                                 ).expand(),
-                                Column(
-                                  children: [
-                                    Text('0.2 Km Away', style: secondaryTextStyle(color: LSColorPrimary)),
-                                    8.height,
-                                    Container(
-                                      padding: EdgeInsets.only(left: 8, right: 8, top: 6, bottom: 6),
-                                      decoration: boxDecorationWithRoundedCorners(backgroundColor: Colors.green, borderRadius: BorderRadius.circular(20)),
-                                      child: Text('Open'.toUpperCase(), style: primaryTextStyle(color: white)),
-                                    ),
-                                  ],
-                                )
                               ],
                             ),
                           ),
@@ -119,13 +93,6 @@ class LSServiceDetailScreenState extends State<LSServiceDetailScreen> {
                       16.height,
                       Row(
                         children: [
-                          Column(
-                            children: [
-                              Icon(LineIcons.globe, size: 30, color: LSColorPrimary),
-                              8.height,
-                              Text('Website', style: primaryTextStyle()),
-                            ],
-                          ).expand(),
                           Column(
                             children: [
                               Icon(LineIcons.phone, size: 30, color: LSColorPrimary),
@@ -138,13 +105,6 @@ class LSServiceDetailScreenState extends State<LSServiceDetailScreen> {
                               Icon(LineIcons.directions, size: 30, color: LSColorPrimary),
                               8.height,
                               Text('Direction', style: primaryTextStyle()),
-                            ],
-                          ).expand(),
-                          Column(
-                            children: [
-                              Icon(LineIcons.share_square_1, size: 30, color: LSColorPrimary),
-                              8.height,
-                              Text('Share', style: primaryTextStyle()),
                             ],
                           ).expand(),
                         ],
@@ -172,12 +132,6 @@ class LSServiceDetailScreenState extends State<LSServiceDetailScreen> {
                     Tab(
                       child: Align(
                         alignment: Alignment.center,
-                        child: Text('Offers'.toUpperCase(), style: primaryTextStyle(size: 13)),
-                      ),
-                    ),
-                    Tab(
-                      child: Align(
-                        alignment: Alignment.center,
                         child: Text('PriceList'.toUpperCase(), style: primaryTextStyle(size: 13)),
                       ),
                     ),
@@ -187,22 +141,11 @@ class LSServiceDetailScreenState extends State<LSServiceDetailScreen> {
             ];
           },
           body: TabBarView(
-            children: [LSAboutComponent(), LSServicesComponent(), PurchaseMoreScreen(), LSPriceListComponent()],
+            children: [LSAboutComponent(), LSServicesComponent(), LSPriceListComponent()],
           ),
         ),
       ),
-      bottomNavigationBar: Container(
-        decoration: boxDecorationWithShadow(backgroundColor: context.cardColor),
-        padding: EdgeInsets.all(8),
-        child: AppButton(
-          text: 'Schedule a pickup'.toUpperCase(),
-          textColor: white,
-          color: LSColorPrimary,
-          onTap: () {
-            LSScheduleScreen().launch(context);
-          },
-        ),
-      ),
+      bottomNavigationBar: LSNavBar(selectedIndex: 0),
     );
   }
 }

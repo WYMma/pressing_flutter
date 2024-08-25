@@ -70,6 +70,7 @@ dependencies:
   dio: ^5.6.0
   device_info_plus: ^10.1.2
   font_awesome_flutter: ^10.7.0
+  shimmer: ^2.0.0
 
 dev_dependencies:
   build_runner: ^2.1.7

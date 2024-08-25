@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:laundry/api/LSAddressAPI.dart';
 import 'package:laundry/main.dart';
 import 'package:laundry/model/LSAddressModel.dart';
 import 'package:laundry/screens/Profile/Addresse/LSAddAddressScreen.dart';
 import 'package:laundry/screens/Profile/Addresse/LSEditAddressScreen.dart';
 import 'package:laundry/services/LSAuthService.dart';
+import 'package:laundry/services/api/LSAddressAPI.dart';
 import 'package:nb_utils/nb_utils.dart';
 import 'package:laundry/utils/LSColors.dart';
 import 'package:provider/provider.dart';
@@ -117,7 +117,6 @@ class _LSAddressListComponentState extends State<LSAddressListComponent> {
       },
     );
   }
-
 
   @override
   Widget build(BuildContext context) {

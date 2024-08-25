@@ -2,10 +2,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:laundry/api/LSAddressAPI.dart';
-import 'package:laundry/api/LSCreditCardAPI.dart';
-import 'package:laundry/api/firebase_api.dart';
-import 'package:laundry/localDB/LSCartProvider.dart';
+import 'package:laundry/services/api/LSAddressAPI.dart';
+import 'package:laundry/services/api/LSCreditCardAPI.dart';
+import 'package:laundry/services/api/firebase_api.dart';
+import 'package:laundry/services/localDB/LSCartProvider.dart';
 import 'package:laundry/fragments/LSHomeFragment.dart';
 import 'package:laundry/screens/LSWalkThroughScreen.dart';
 import 'package:laundry/services/LSAuthService.dart';

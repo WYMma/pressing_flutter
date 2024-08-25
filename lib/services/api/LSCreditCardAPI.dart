@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart' as Dio;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:laundry/model/LSCreditCardWidget.dart';
+import 'package:laundry/components/LSCreditCardComponent.dart';
 import 'package:laundry/services/dio.dart';
 
 
@@ -25,10 +25,10 @@ class LSCreditCardAPI extends ChangeNotifier {
         print('Fetched cards: $data');
 
         // Clear existing saved payment methods
-        LSCreditCardWidget.savedPaymentMethods.clear();
+        LSCreditCardComponent.savedPaymentMethods.clear();
 
         // Convert JSON to Map<String, String> and add to savedPaymentMethods
-        LSCreditCardWidget.savedPaymentMethods = data.map((json) {
+        LSCreditCardComponent.savedPaymentMethods = data.map((json) {
           // Ensure each field is treated as String and handle null values
           return {
             'cardID': json['cardID']?.toString() ?? '', // Default to empty string if null
@@ -39,7 +39,7 @@ class LSCreditCardAPI extends ChangeNotifier {
           };
         }).toList();
 
-        print('Saved payment methods: ${LSCreditCardWidget.savedPaymentMethods}');
+        print('Saved payment methods: ${LSCreditCardComponent.savedPaymentMethods}');
       } else {
         print('Unexpected response data format');
       }

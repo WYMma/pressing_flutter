@@ -9,8 +9,8 @@ import 'package:laundry/screens/LSSchedule/LSScheduleScreen.dart';
 import 'package:laundry/utils/LSColors.dart';
 import 'package:nb_utils/nb_utils.dart';
 import 'package:provider/provider.dart';
-import 'package:laundry/localDB/LSCartProvider.dart';
-import 'package:laundry/localDB/LSDBHelper.dart';
+import 'package:laundry/services/localDB/LSCartProvider.dart';
+import 'package:laundry/services/localDB/LSDBHelper.dart';
 import 'package:laundry/model/LSCartModel.dart';
 
 class LSCartFragment extends StatefulWidget {

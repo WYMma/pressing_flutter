@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:laundry/localDB/LSCartProvider.dart';
+import 'package:laundry/services/localDB/LSCartProvider.dart';
 import 'package:laundry/fragments/LSBookingFragment.dart';
 import 'package:laundry/fragments/LSCartFragment.dart';
 import 'package:laundry/fragments/LSHomeFragment.dart';

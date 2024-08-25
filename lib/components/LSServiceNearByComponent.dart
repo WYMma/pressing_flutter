@@ -50,12 +50,6 @@ class LSServiceNearByComponentState extends State<LSServiceNearByComponent> {
                   Row(
                     children: [
                       Text(data.title.validate(), style: primaryTextStyle()).expand(),
-                      Row(
-                        children: [
-                          Icon(Icons.star, color: Colors.yellowAccent),
-                          Text(data.rating.validate(), style: secondaryTextStyle()),
-                        ],
-                      )
                     ],
                   ),
                 ],

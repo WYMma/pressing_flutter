@@ -7,7 +7,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:nb_utils/nb_utils.dart';
 import 'package:laundry/components/LSNavBar.dart';
-import 'package:laundry/localDB/LSCartProvider.dart';
+import 'package:laundry/services/localDB/LSCartProvider.dart';
 import 'package:laundry/fragments/LSCartFragment.dart';
 import 'package:laundry/model/LSNotificationsModel.dart';
 import 'package:laundry/screens/LSSignInScreen.dart';

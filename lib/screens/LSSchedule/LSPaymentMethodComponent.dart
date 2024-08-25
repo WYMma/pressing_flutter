@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:laundry/components/LSCreditCardComponent.dart';
 import 'package:nb_utils/nb_utils.dart';
 
-import '../../components/LSShowSavedPaymentMethodsComponent.dart';
 import '../../main.dart';
 import '../../model/LSOrder.dart';
 import '../../utils/LSColors.dart';
@@ -53,18 +53,19 @@ class LSPaymentMethodComponentState extends State<LSPaymentMethodComponent> with
       } else {
         showSavedPaymentMethods = false;
       }
+      print('showSavedPaymentMethods: $showSavedPaymentMethods'); // Add this line for debugging
     });
   }
 
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return SingleChildScrollView(
-      child: Container(
+    return Scaffold(
+      body: Container(
         color: appStore.isDarkModeOn ? context.scaffoldBackgroundColor : LSColorSecondary.withOpacity(0.55),
         padding: EdgeInsets.all(8),
         child: showSavedPaymentMethods
-            ? LSShowSavedPaymentMethodsComponent() // Show the saved payment methods component
+            ? LSCreditCardComponent() // Show the saved payment methods component
             : Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

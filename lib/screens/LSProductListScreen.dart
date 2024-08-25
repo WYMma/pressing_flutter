@@ -6,10 +6,10 @@ import 'package:laundry/utils/LSColors.dart';
 import 'package:laundry/utils/LSImages.dart';
 import 'package:nb_utils/nb_utils.dart';
 import 'package:provider/provider.dart';
-import 'package:laundry/localDB/LSCartProvider.dart';
+import 'package:laundry/services/localDB/LSCartProvider.dart';
 import 'package:laundry/fragments/LSCartFragment.dart';
 import 'package:laundry/model/LSItemModel.dart';
-import 'package:laundry/localDB/LSDBHelper.dart';
+import 'package:laundry/services/localDB/LSDBHelper.dart';
 import 'package:laundry/model/LSCartModel.dart';
 
 import 'LSNotificationsScreen.dart';

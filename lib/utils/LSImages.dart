@@ -50,3 +50,4 @@ const LSForgot = 'images/ls_forgot.png';
 const LSReset = 'images/ls_reset.png';
 const LSVerify = 'images/ls_verify.png';
 const LSAvatar = 'images/ls_avatar.jpeg';
+const Yassin = 'images/yassin.png';

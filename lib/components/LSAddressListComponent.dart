@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:laundry/api/LSAddressAPI.dart';
 import 'package:laundry/main.dart';
 import 'package:laundry/model/LSAddressModel.dart';
 import 'package:laundry/screens/Profile/Addresse/LSAddAddressScreen.dart';
 import 'package:laundry/screens/Profile/Addresse/LSEditAddressScreen.dart';
+import 'package:laundry/services/LSAuthService.dart';
 import 'package:nb_utils/nb_utils.dart';
 import 'package:laundry/utils/LSColors.dart';
+import 'package:provider/provider.dart';
 
 import '../model/LSOrder.dart';
 
@@ -55,10 +58,10 @@ class _LSAddressListComponentState extends State<LSAddressListComponent> {
                   leading: Icon(Icons.delete, color: Colors.red),
                   title: Text('Supprimer', style: TextStyle(color: Theme.of(context).textTheme.bodyLarge!.color)),
                   onTap: () {
-                    LSAddressModel.deleteAddress(address);
+                    Navigator.pop(context);
+                    _deleteAddress(address);
                     widget.refreshCallback();
                     setState(() {});
-                    Navigator.pop(context);
                   },
                 ),
               ],
@@ -78,6 +81,43 @@ class _LSAddressListComponentState extends State<LSAddressListComponent> {
       setState(() {});
     });
   }
+
+  void _deleteAddress(LSAddressModel address) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Confirmation'),
+          content: Text('Êtes-vous sûr de vouloir supprimer cette adresse ?'),
+          elevation: 5,
+          actions: <Widget>[
+            TextButton.icon(
+              icon: Icon(Icons.cancel, color: Colors.red), // Add your trailing icon
+              label: Text('Non', style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+            ),
+            TextButton.icon(
+              icon: Icon(Icons.check_circle, color: LSColorPrimary), // Add your trailing icon
+              label: Text('Oui', style: TextStyle(color: LSColorPrimary, fontWeight: FontWeight.bold)),
+              onPressed: () async {
+                var authService = Provider.of<LSAuthService>(context, listen: false);
+                await Provider.of<LSAddressAPI>(context, listen: false).deleteAddress(
+                  addressID: address.id.toString(),
+                  clientID: authService.client!.clientID,
+                );
+                widget.refreshCallback();
+                setState(() {});
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
 
   @override
   Widget build(BuildContext context) {

@@ -25,7 +25,7 @@ class LSAuthService extends ChangeNotifier {
       _token = response.data.toString();
       this.tryToken(token: _token);
       notifyListeners();
-      print(_user);
+
     } on Exception catch (e) {
       print(e);
     }
@@ -47,8 +47,42 @@ class LSAuthService extends ChangeNotifier {
   }
 
 
+  Future<void> updateClient({String? clientID, Map? creds}) async {
+    try {
+      String? token = await storage.read(key: 'token');
+        Dio.Response response = await dio().put('/client/$clientID', data: creds, options: Dio.Options(headers: {'Authorization' : 'Bearer $token'}));
+        this._client = Client.fromJson(response.data);
+        notifyListeners();
+      } catch (e) {
+        print(e);
+      }
+  }
 
-  void retrieveClient({String? userID, String? token}) async {
+  Future<int?> changePassword(String currentPassword, String newPassword) async {
+    String? token = await storage.read(key: 'token');
+
+    try {
+      Dio.Response response = await dio().post(
+        '/change-password',
+        data: {
+          'current_password': currentPassword,
+          'new_password': newPassword,
+        },
+        options: Dio.Options(
+          headers: {'Authorization': 'Bearer $token'},
+          validateStatus: (status) {
+            return status != null && status >= 200 && status < 500; // Handle any status code less than 500
+          },
+        ),
+      );
+      return response.statusCode;
+    } catch (e) {
+      print('Failed to update password: $e');
+      return null; // Return null or an error code to handle in your Flutter app
+    }
+  }
+
+  Future<void> retrieveClient({String? userID, String? token}) async {
     if (token == null) {
       return;
     } else {
@@ -62,7 +96,7 @@ class LSAuthService extends ChangeNotifier {
     }
   }
 
-  void tryToken({String? token}) async {
+  Future<void> tryToken({String? token}) async {
     if (token == null) {
       return;
     } else {
@@ -76,13 +110,12 @@ class LSAuthService extends ChangeNotifier {
 
         // Ensure the userID is treated as a string
         String userID = response.data['id'].toString();
-        this.retrieveClient(userID: userID, token: token);
+        await this.retrieveClient(userID: userID, token: token);
         this._token = token;
         this.storeToken(token: token);
+        print(_user);
+        print(_client);
         notifyListeners();
-
-        print('Client: $_client');
-        print('User: $_user');
       } catch (e) {
         print(e);
       }

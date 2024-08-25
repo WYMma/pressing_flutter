@@ -6,7 +6,7 @@ import 'package:laundry/model/LSNotificationsModel.dart';
 import 'package:nb_utils/nb_utils.dart';
 
 class FirebaseAPI {
-  static final FirebaseMessaging messaging = FirebaseMessaging.instance;
+  final FirebaseMessaging messaging = FirebaseMessaging.instance;
 
   final _androidChannel = const AndroidNotificationChannel(
     'your_channel_id',  // Match the channel ID used in LocalNotifications

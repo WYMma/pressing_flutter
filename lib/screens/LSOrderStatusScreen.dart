@@ -41,14 +41,16 @@ class LSOrderStatusScreenState extends State<LSOrderStatusScreen> {
           title: Text('Confirmation'),
           content: Text('Êtes-vous sûr de vouloir annuler la commande ?'),
           actions: <Widget>[
-            TextButton(
-              child: Text('Non', style: boldTextStyle()),
+            TextButton.icon(
+              icon: Icon(Icons.cancel, color: Colors.red), // Add your trailing icon
+              label: Text('Non', style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
               onPressed: () {
                 Navigator.of(context).pop(); // Close the dialog
               },
             ),
-            TextButton(
-              child: Text('Oui', style: boldTextStyle()),
+            TextButton.icon(
+              icon: Icon(Icons.check_circle, color: LSColorPrimary), // Add your trailing icon
+              label: Text('Oui', style: TextStyle(color: LSColorPrimary, fontWeight: FontWeight.bold)),
               onPressed: () {
                 LSOrder.removeOrder(widget.data!);
                 Navigator.of(context).pop(); // Close the dialog
@@ -93,7 +95,7 @@ class LSOrderStatusScreenState extends State<LSOrderStatusScreen> {
   }
 
   void _callDeliveryAgent() async {
-    const phoneNumber = 'tel:+21693726082';
+    const phoneNumber = 'tel:+21622869369';
     if (await canLaunchUrlString(phoneNumber)) {
       await launchUrlString(phoneNumber);
     } else {
@@ -250,7 +252,7 @@ class LSOrderStatusScreenState extends State<LSOrderStatusScreen> {
                           Text('Pressing Nefatti', style: boldTextStyle()),
                           4.height,
                           12.height,
-                          Text('1810 Cammon Realm Redwood City, CA 94063 États-Unis', style: secondaryTextStyle()), // Translated address
+                          Text('Av. de la République, Gabes, Tunisie', style: secondaryTextStyle()), // Translated address
                           8.height,
                         ],
                       ).expand(),

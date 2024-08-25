@@ -1,6 +1,5 @@
 import 'package:date_time_picker/date_time_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:laundry/utils/LSCommon.dart';
 import 'package:nb_utils/nb_utils.dart';
 
 import '../../main.dart';
@@ -111,9 +110,6 @@ class LSDateTimeComponentState extends State<LSDateTimeComponent> with Automatic
                           order.setPickUpDate(pickUpDateTime);
                         }
                       },
-                      validator: (val) {
-                        // Add validation logic if needed
-                      },
                       onSaved: (val) {
                         // Add save logic if needed
                       },
@@ -133,7 +129,7 @@ class LSDateTimeComponentState extends State<LSDateTimeComponent> with Automatic
                       isPrimeService = value!;
                       if (LSOrder.exists() && isPrimeService) {
                         LSOrder order = LSOrder();
-                        order.setdeliveryType("Livraison Prime");
+                        order.setdeliveryType("Livraison Express");
                         order.addPrice(5.0);
                       }else{
                         LSOrder order = LSOrder();
@@ -144,7 +140,7 @@ class LSDateTimeComponentState extends State<LSDateTimeComponent> with Automatic
                     });
                   },
                 ),
-                Text('Service Prime (livraison en 1 jour +5DT)', style: primaryTextStyle()),
+                Text('Service Express (+5DT)', style: primaryTextStyle()),
               ],
             ),
             32.height,
@@ -195,9 +191,6 @@ class LSDateTimeComponentState extends State<LSDateTimeComponent> with Automatic
                           LSOrder order = LSOrder();
                           order.setDeliveryDate(deliveryDateTime);
                         }
-                      },
-                      validator: (val) {
-                        // Add validation logic if needed
                       },
                       onSaved: (val) {
                         // Add save logic if needed

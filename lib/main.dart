@@ -2,6 +2,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:laundry/api/LSAddressAPI.dart';
+import 'package:laundry/api/LSCreditCardAPI.dart';
 import 'package:laundry/api/firebase_api.dart';
 import 'package:laundry/localDB/LSCartProvider.dart';
 import 'package:laundry/fragments/LSHomeFragment.dart';
@@ -43,6 +45,8 @@ void main() async {
       providers: [
         ChangeNotifierProvider(create: (_) => LSCartProvider()),
         ChangeNotifierProvider(create: (_) => LSAuthService()),
+        ChangeNotifierProvider(create: (_) => LSAddressAPI()),
+        ChangeNotifierProvider(create: (_) => LSCreditCardAPI()),
       ],
       child: MyApp(),
     ),

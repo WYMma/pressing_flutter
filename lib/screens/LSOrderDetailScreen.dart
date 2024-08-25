@@ -62,6 +62,14 @@ class LSOrderDetailScreenState extends State<LSOrderDetailScreen> {
                     style: secondaryTextStyle(),
                   ),
                   Divider(),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text('Methode Paiement', style: boldTextStyle(size: 14)),
+                      Text(widget.data!.paymentMethod.toString(), style: secondaryTextStyle())
+                    ],
+                  ),
+                  Divider(),
                   Text('Articles', style: boldTextStyle(size: 18)),
                   Divider(),
                   Container(
@@ -95,7 +103,7 @@ class LSOrderDetailScreenState extends State<LSOrderDetailScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(widget.data!.deliveryType, style: boldTextStyle()),
-                      if (widget.data!.deliveryType == 'Livraison Prime')
+                      if (widget.data!.deliveryType == 'Livraison Express')
                         Text('5.0 DT', style: primaryTextStyle())
                       else
                         Text('0.0 DT', style: primaryTextStyle())

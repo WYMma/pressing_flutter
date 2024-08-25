@@ -1,27 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:laundry/services/LSAuthService.dart';
 import 'package:laundry/services/LSLocalAuthService.dart';
 import 'package:laundry/utils/LSColors.dart';
 import 'package:nb_utils/nb_utils.dart';
+import 'package:provider/provider.dart';
 import 'package:u_credit_card/u_credit_card.dart';
+import '../api/LSCreditCardAPI.dart';
 import '../screens/Profile/Paiement/LSEditPaymentMethod.dart';
 
 class LSCreditCardWidget extends StatefulWidget {
   @override
   _LSCreditCardWidgetState createState() => _LSCreditCardWidgetState();
 
-  static List<Map<String, String>> savedPaymentMethods = [
-    {'number': '1234567812345678', 'holder': 'John Doe', 'expiry': '12/24', 'cvv': '123'},
-    {'number': '8765432187654321', 'holder': 'Jane Smith', 'expiry': '01/25', 'cvv': '456'},
-  ];
-
-  static void addPaymentMethod(String cardNumber, String cardHolder, String expiryDate, String cvv) {
-    savedPaymentMethods.add({
-      'number': cardNumber,
-      'holder': cardHolder,
-      'expiry': expiryDate,
-      'cvv': cvv,
-    });
-  }
+  static List<Map<String, String>> savedPaymentMethods = [];
 
   static void deletePaymentMethod(String cardNumber) {
     savedPaymentMethods.removeWhere((element) => element['number'] == cardNumber);
@@ -48,6 +39,7 @@ class _LSCreditCardWidgetState extends State<LSCreditCardWidget> {
     return ListView.builder(
       itemCount: LSCreditCardWidget.savedPaymentMethods.length,
       itemBuilder: (context, index) {
+        String cardID = LSCreditCardWidget.savedPaymentMethods[index]['cardID']!;
         String cardNumber = LSCreditCardWidget.savedPaymentMethods[index]['number']!;
         String cardHolder = LSCreditCardWidget.savedPaymentMethods[index]['holder']!;
         String expiryDate = LSCreditCardWidget.savedPaymentMethods[index]['expiry']!;
@@ -55,13 +47,13 @@ class _LSCreditCardWidgetState extends State<LSCreditCardWidget> {
         return GestureDetector(
           onLongPress: () {
             setState(() {
-              selectedPaymentMethod = cardNumber;
+              selectedPaymentMethod = cardID;
             });
-            _showOptionsOverlay(context, cardNumber);
+            _showOptionsOverlay(context, cardID);
           },
           onTap: () {
             setState(() {
-              selectedPaymentMethod = cardNumber;
+              selectedPaymentMethod = cardID;
             });
           },
           child: Container(
@@ -70,8 +62,8 @@ class _LSCreditCardWidgetState extends State<LSCreditCardWidget> {
               cardHolderFullName: cardHolder,
               cardNumber: cardNumber,
               validThru: expiryDate,
-              topLeftColor: selectedPaymentMethod == cardNumber ? Colors.blue : Colors.black,
-              bottomRightColor: selectedPaymentMethod == cardNumber ? Colors.black : Colors.grey.shade300,
+              topLeftColor: selectedPaymentMethod == cardID ? Colors.blue : Colors.black,
+              bottomRightColor: selectedPaymentMethod == cardID ? Colors.black : Colors.grey.shade300,
               doesSupportNfc: true,
               showValidFrom: false,
               cvvNumber: cvv,
@@ -83,7 +75,7 @@ class _LSCreditCardWidgetState extends State<LSCreditCardWidget> {
     ).paddingTop(16);
   }
 
-  void _showOptionsOverlay(BuildContext context, String cardNumber) {
+  void _showOptionsOverlay(BuildContext context, String cardID) {
     showModalBottomSheet(
       context: context,
       builder: (BuildContext context) {
@@ -110,7 +102,7 @@ class _LSCreditCardWidgetState extends State<LSCreditCardWidget> {
                     bool isAuthenticated = await LSLocalAuthService.authenticate();
                     if (isAuthenticated) {
                       Navigator.pop(context);
-                      _navigateToEditPaymentMethod(context, cardNumber);
+                      _navigateToEditPaymentMethod(context, cardID);
                     } else {
                       toast('Authentification échouée');
                     }
@@ -125,10 +117,12 @@ class _LSCreditCardWidgetState extends State<LSCreditCardWidget> {
                   onTap: () async {
                     bool isAuthenticated = await LSLocalAuthService.authenticate();
                     if (isAuthenticated) {
-                      setState(() {
-                        LSCreditCardWidget.deletePaymentMethod(cardNumber);
-                      });
+                      var authservice = Provider.of<LSAuthService>(context, listen: false);
+                      String clientID = authservice.client!.clientID;
+                      await Provider.of<LSCreditCardAPI>(context, listen: false).deleteCreditCard(cardID: cardID, clientID: clientID);
                       Navigator.pop(context);
+                      setState(() {
+                      });
                     } else {
                       toast('Authentification échouée');
                     }
@@ -142,11 +136,11 @@ class _LSCreditCardWidgetState extends State<LSCreditCardWidget> {
     );
   }
 
-  void _navigateToEditPaymentMethod(BuildContext context, String cardNumber) {
+  void _navigateToEditPaymentMethod(BuildContext context, String cardID) {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => LSEditPaymentMethod(cardNumber: cardNumber),
+        builder: (context) => LSEditPaymentMethod(cardID: cardID),
       ),
     ).then((_) {
       setState(() {});

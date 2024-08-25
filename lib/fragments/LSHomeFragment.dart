@@ -1,6 +1,8 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:laundry/api/LSAddressAPI.dart';
+import 'package:laundry/api/LSCreditCardAPI.dart';
 import 'package:laundry/components/LSNavBar.dart';
 import 'package:laundry/localDB/LSCartProvider.dart';
 import 'package:laundry/fragments/LSCartFragment.dart';
@@ -41,7 +43,12 @@ class LSHomeFragmentState extends State<LSHomeFragment> {
   void readToken() async {
     try {
       String? token = await storage.read(key: 'token');
-      Provider.of<LSAuthService>(context, listen: false).tryToken(token: token);
+      final authService = Provider.of<LSAuthService>(context, listen: false);
+      await authService.tryToken(token: token);
+
+      // Ensure that LSAddressAPI is correctly provided
+      Provider.of<LSAddressAPI>(context, listen: false).getAddress(authService.client?.clientID);  // Pass the context here
+      Provider.of<LSCreditCardAPI>(context, listen: false).getCreditCard(authService.client?.clientID);  // Pass the context here
     } on Exception catch (e) {
       print(e);
     }

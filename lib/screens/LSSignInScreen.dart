@@ -1,6 +1,6 @@
 import 'package:device_info_plus/device_info_plus.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:laundry/api/firebase_api.dart';
 import 'package:laundry/fragments/LSHomeFragment.dart';
 import 'package:laundry/screens/resetPassword/LSForgotPasswordScreen.dart';
 import 'package:laundry/services/LSAuthService.dart';
@@ -40,22 +40,6 @@ class LSSignInScreenState extends State<LSSignInScreen> {
   //Device Info
   DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
   String? deviceName;
-
-  Future<void> _retryOperation(Future<void> Function() operation) async {
-    int retryCount = 0;
-    while (retryCount < maxRetries) {
-      try {
-        await operation();
-        break;  // Exit loop if operation succeeds
-      } catch (e) {
-        retryCount++;
-        if (retryCount >= maxRetries) {
-          rethrow;  // Re-throw exception if max retries exceeded
-        }
-        await Future.delayed(retryDelay);  // Wait before retrying
-      }
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -233,42 +217,37 @@ class LSSignInScreenState extends State<LSSignInScreen> {
                             'last_name': lastNameCont.text.trim(),
                             'cin': cinCont.text.trim(),
                             'device_name': deviceName ?? 'unknown',
-                            'tokenFCM' : await FirebaseAPI.messaging.getToken()
+                            'tokenFCM' : await  FirebaseMessaging.instance.getToken()
                           };
                           var authService = Provider.of<LSAuthService>(context, listen: false);
-
-                          await _retryOperation(() async {
-                            await authService.register(creds: credsSignup);
-                            if (authService.user != null) {
+                          await authService.register(creds: credsSignup);
+                          if (authService.user != null) {
                               LSHomeFragment().launch(context);
                               showToast(context, 'Inscription réussie');
-                            } else {
+                          } else {
                               showToast(context, 'Erreur lors de l\'inscription', isError: true);
-                            }
-                          });
+                          }
                         } else {
                           Map credsSignin = {
                             'phone': phoneCont.text.trim(),
                             'password': passCont.text.trim(),
                             'device_name': deviceName ?? 'unknown',
-                            'tokenFCM' : await FirebaseAPI.messaging.getToken()
+                            'tokenFCM' : await  FirebaseMessaging.instance.getToken()
                           };
                           var authService = Provider.of<LSAuthService>(context, listen: false);
 
-                          await _retryOperation(() async {
-                            await authService.login(creds: credsSignin);
+                          await authService.login(creds: credsSignin);
 
-                            if (authService.user != null) {
-                              if (authService.user!.role == 'Client') {
+                          if (authService.user != null) {
+                            if (authService.user!.role == 'Client') {
                                 LSHomeFragment().launch(context);
                                 showToast(context, 'Connexion réussie');
-                              } else {
-                                showToast(context, 'Veuillez vérifier vos données', isError: true);
-                              }
                             } else {
-                              showToast(context, 'Veuillez vérifier vos données', isError: true);
+                                showToast(context, 'Veuillez vérifier vos données', isError: true);
                             }
-                          });
+                          } else {
+                              showToast(context, 'Veuillez vérifier vos données', isError: true);
+                          }
                         }
                       } catch (e) {
                         showToast(context, e.toString(), isError: true);

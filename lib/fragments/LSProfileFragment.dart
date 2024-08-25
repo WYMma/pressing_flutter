@@ -1,21 +1,21 @@
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:laundry/main.dart';
+import 'package:laundry/screens/LSNotificationsScreen.dart';
+import 'package:provider/provider.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:nb_utils/nb_utils.dart';
 import 'package:laundry/components/LSNavBar.dart';
 import 'package:laundry/localDB/LSCartProvider.dart';
 import 'package:laundry/fragments/LSCartFragment.dart';
 import 'package:laundry/model/LSNotificationsModel.dart';
 import 'package:laundry/screens/LSSignInScreen.dart';
 import 'package:laundry/services/LSAuthService.dart';
-import 'package:nb_utils/nb_utils.dart';
-import 'package:provider/provider.dart';
-import '../main.dart';
-import '../screens/LSNotificationsScreen.dart';
-import '../screens/Profile/Addresse/LSSavedAddressesScreen.dart';
-import '../screens/Profile/Paiement/LSSavedPaymentMethodsScreen.dart';
-import '../screens/Profile/LSSettings.dart';
-import '../utils/LSColors.dart';
+import 'package:laundry/screens/Profile/Addresse/LSSavedAddressesScreen.dart';
+import 'package:laundry/screens/Profile/Paiement/LSSavedPaymentMethodsScreen.dart';
+import 'package:laundry/screens/Profile/LSSettings.dart';
+import 'package:laundry/utils/LSColors.dart';
 
 class LSProfileFragment extends StatefulWidget {
   const LSProfileFragment({Key? key}) : super(key: key);
@@ -87,12 +87,12 @@ class LSProfileFragmentState extends State<LSProfileFragment> {
                   return Column(
                     children: [
                       CircleAvatar(
-                          radius: 60,
-                          backgroundColor: Colors.red,
-                          backgroundImage: CachedNetworkImageProvider(
-                            authService.user!.avatar,
-                          ),
+                        radius: 60,
+                        backgroundColor: Colors.red,
+                        backgroundImage: CachedNetworkImageProvider(
+                          authService.user!.avatar,
                         ),
+                      ),
                       const SizedBox(height: 10),
                       Text(
                         '${authService.client!.first_name} ${authService.client!.last_name}',
@@ -159,20 +159,50 @@ class LSProfileFragmentState extends State<LSProfileFragment> {
             context,
             title: "Déconnexion",
             icon: CupertinoIcons.arrow_right_arrow_left,
-            onTap: () async {
-              context.read<LSCartProvider>().clearCart();
-              Navigator.of(context).pushAndRemoveUntil(
-                MaterialPageRoute(builder: (context) => LSSignInScreen()),
-                    (Route<dynamic> route) => false,
-              );
-              var authService = Provider.of<LSAuthService>(context, listen: false);
-              await authService.logout();
-              Fluttertoast.showToast(msg: "Déconnexion réussie");
+            onTap: () {
+              _showLogoutConfirmationDialog();
             },
           ),
         ],
       ),
       bottomNavigationBar: LSNavBar(selectedIndex: _selectedIndex),
+    );
+  }
+
+  void _showLogoutConfirmationDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Confirmation'),
+          content: Text('Êtes-vous sûr de vouloir vous déconnecter ?'),
+          actions: <Widget>[
+            TextButton.icon(
+              icon: Icon(Icons.cancel, color: LSColorPrimary), // Add your trailing icon
+              label: Text('Non', style: TextStyle(color: LSColorPrimary, fontWeight: FontWeight.bold)),
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+            ),
+            TextButton.icon(
+              icon: Icon(Icons.logout, color: Colors.red), // Add your trailing icon
+              label: Text('Oui', style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
+              onPressed: () async {
+                // Perform logout actions
+                context.read<LSCartProvider>().clearCart();
+                var authService = Provider.of<LSAuthService>(context, listen: false);
+                await authService.logout();
+                Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(builder: (context) => LSSignInScreen()),
+                      (Route<dynamic> route) => false,
+                );
+                Fluttertoast.showToast(msg: "Déconnexion réussie");
+                Navigator.of(context).pop(); // Close the dialog
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 }

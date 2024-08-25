@@ -15,39 +15,15 @@ class LSAddressModel {
     required this.type,
   });
 
-  static List<LSAddressModel> savedAddresses = [
-    LSAddressModel(
-      id: 1,
-      area: 'Phase 5, Sector 59, Mohali',
-      street: 'Plot no. F-126, First Floor, Phase 8b, Industrial Area Mohali',
-      city: 'Mohali',
-      postalCode: '160055',
-      type: 'Travail',
-    ),
-    LSAddressModel(
-      id: 2,
-      area: 'Phase 5, Sector 59, Mohali',
-      street: 'Plot no. F-126, First Floor, Phase 8b, Industrial Area Mohali',
-      city: 'Mohali',
-      postalCode: '160055',
-      type: 'Travail',
-    ),
-  ];
+  LSAddressModel.fromJson(Map<String, dynamic> json)
+      : id = json['addressID'] as int,
+        area = json['area'],
+        street = json['street'],
+        city = json['city'],
+        postalCode = json['postal_code'],
+        type = json['type'];
 
-  static void addAddress(LSAddressModel address) {
-    savedAddresses.add(address);
-  }
-
-  static void editAddress(LSAddressModel oldAddress, LSAddressModel newAddress) {
-    int index = savedAddresses.indexOf(oldAddress);
-    if (index != -1) {
-      savedAddresses[index] = newAddress;
-    }
-  }
-
-  static void deleteAddress(LSAddressModel address) {
-    savedAddresses.remove(address);
-  }
+  static List<LSAddressModel> savedAddresses = [];
 
   @override
   String toString() {

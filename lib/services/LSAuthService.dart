@@ -2,6 +2,7 @@ import 'package:dio/dio.dart' as Dio;
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:laundry/main.dart';
+import 'package:laundry/model/transporteur.dart';
 import 'package:laundry/model/user.dart';
 import 'package:laundry/services/dio.dart';
 import 'package:laundry/model/client.dart';
@@ -10,11 +11,13 @@ class LSAuthService extends ChangeNotifier {
   bool _isLoggedIn = appStore.isSignedIn;
   User? _user;
   Client? _client;
+  Transporteur? _transporteur;
   String? _token;
 
   bool get authenticated => _isLoggedIn;
   User? get user => _user;
   Client? get client => _client;
+  Transporteur? get transporteur => _transporteur;
 
   final storage = FlutterSecureStorage();
 
@@ -23,7 +26,7 @@ class LSAuthService extends ChangeNotifier {
       Dio.Response response = await dio().post('/sanctum/token', data: creds);
       print(response.data.toString());
       _token = response.data.toString();
-      this.tryToken(token: _token);
+      tryToken(token: _token);
       notifyListeners();
 
     } on Exception catch (e) {
@@ -37,21 +40,32 @@ class LSAuthService extends ChangeNotifier {
       Map credsSignin = {
         'phone': creds!['phone'],
         'password': creds['password'],
-        'device_name': creds['device_name']
+        'device_name': creds['device_name'],
+        'tokenFCM': creds['tokenFCM'],
       };
-      this.login(creds: credsSignin);
+      login(creds: credsSignin);
       notifyListeners();
     } on Exception catch (e) {
       print(e);
     }
   }
 
-
   Future<void> updateClient({String? clientID, Map? creds}) async {
     try {
       String? token = await storage.read(key: 'token');
         Dio.Response response = await dio().put('/client/$clientID', data: creds, options: Dio.Options(headers: {'Authorization' : 'Bearer $token'}));
-        this._client = Client.fromJson(response.data);
+        _client = Client.fromJson(response.data);
+        notifyListeners();
+      } catch (e) {
+        print(e);
+      }
+  }
+
+  Future<void> updateTransporteur({String? personnelID, Map? creds}) async {
+    try {
+      String? token = await storage.read(key: 'token');
+        Dio.Response response = await dio().put('/personnel/$personnelID', data: creds, options: Dio.Options(headers: {'Authorization' : 'Bearer $token'}));
+        _transporteur = Transporteur.fromJson(response.data);
         notifyListeners();
       } catch (e) {
         print(e);
@@ -88,7 +102,21 @@ class LSAuthService extends ChangeNotifier {
     } else {
       try {
         Dio.Response response = await dio().get('/client/$userID',  options: Dio.Options(headers: {'Authorization' : 'Bearer $token'}));
-        this._client = Client.fromJson(response.data);
+        _client = Client.fromJson(response.data);
+        notifyListeners();
+      } catch (e) {
+        print(e);
+      }
+    }
+  }
+
+  Future<void> retrievePersonnels({String? userID, String? token}) async {
+    if (token == null) {
+      return;
+    } else {
+      try {
+        Dio.Response response = await dio().get('/personnel/$userID',  options: Dio.Options(headers: {'Authorization' : 'Bearer $token'}));
+        _transporteur = Transporteur.fromJson(response.data);
         notifyListeners();
       } catch (e) {
         print(e);
@@ -104,17 +132,24 @@ class LSAuthService extends ChangeNotifier {
         Dio.Response response = await dio().get('/user',
             options: Dio.Options(headers: {'Authorization' : 'Bearer $token'}));
 
-        this._isLoggedIn = true;
+        _isLoggedIn = true;
         appStore.toggleSignInStatus(value: _isLoggedIn);
-        this._user = User.fromJson(response.data);
+        _user = User.fromJson(response.data);
 
         // Ensure the userID is treated as a string
         String userID = response.data['id'].toString();
-        await this.retrieveClient(userID: userID, token: token);
-        this._token = token;
-        this.storeToken(token: token);
-        print(_user);
-        print(_client);
+        String role = response.data['role'];
+        if (role == 'Client') {
+          await retrieveClient(userID: userID, token: token);
+          print(_user);
+          print(_client);
+        } else if (role == 'Transporteur') {
+          await retrievePersonnels(userID: userID, token: token);
+          print(_user);
+          print(_transporteur);
+        }
+        _token = token;
+        storeToken(token: token);
         notifyListeners();
       } catch (e) {
         print(e);
@@ -124,7 +159,8 @@ class LSAuthService extends ChangeNotifier {
 
 
   void storeToken({String? token}) async {
-    this.storage.write(key: 'token', value: token);
+    storage.write(key: 'token', value: token);
+    storage.write(key: 'role', value: _user?.role);
   }
 
   Future<void> logout() async {
@@ -132,6 +168,7 @@ class LSAuthService extends ChangeNotifier {
       await dio().get('/user/revoke',
           options: Dio.Options(headers: {'Authorization' : 'Bearer $_token'}));
       cleanUp();
+      appStore.toggleSignInStatus(value: false);
       notifyListeners();
     } catch (e) {
       print(e);
@@ -139,11 +176,11 @@ class LSAuthService extends ChangeNotifier {
   }
 
   void cleanUp() async {
-    this._user = null;
-    this._client = null;
-    this._isLoggedIn = false;
-    appStore.isSignedIn = this._isLoggedIn;
-    this._token = null;
+    _user = null;
+    _client = null;
+    _isLoggedIn = false;
+    appStore.isSignedIn = _isLoggedIn;
+    _token = null;
     await storage.delete(key: 'token');
   }
 }

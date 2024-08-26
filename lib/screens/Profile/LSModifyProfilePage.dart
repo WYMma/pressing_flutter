@@ -30,10 +30,17 @@ class _LSModifyProfilePage extends State<LSModifyProfilePage> {
 
   void init() async {
     var authService = Provider.of<LSAuthService>(context, listen: false);
-    _firstNameController.text = authService.client!.first_name;
-    _lastNameController.text = authService.client!.last_name;
-    _cinController.text = authService.client!.cin;
-    _emailController.text = authService.client!.email!;
+    if (authService.user!.role == 'Client') {
+      _firstNameController.text = authService.client!.first_name;
+      _lastNameController.text = authService.client!.last_name;
+      _cinController.text = authService.client!.cin;
+      _emailController.text = authService.client!.email!;
+    } else {
+      _firstNameController.text = authService.transporteur!.first_name;
+      _lastNameController.text = authService.transporteur!.last_name;
+      _cinController.text = authService.transporteur!.cin;
+      _emailController.text = authService.transporteur!.email!;
+    }
   }
 
   @override
@@ -160,7 +167,12 @@ class _LSModifyProfilePage extends State<LSModifyProfilePage> {
                           'email': _emailController.text,
                         };
                         var authService = Provider.of<LSAuthService>(context, listen: false);
-                        await authService.updateClient(clientID: authService.client?.clientID, creds: data);
+                        if (authService.user!.role == 'Client') {
+                          await authService.updateClient(clientID: authService.client?.clientID, creds: data);
+                        } else {
+                          print(authService.transporteur!.personnelID);
+                          await authService.updateTransporteur(personnelID: authService.transporteur?.personnelID, creds: data);
+                        }
                         Fluttertoast.showToast(
                           msg: 'Profile Modifiée avec Succès',
                           toastLength: Toast.LENGTH_SHORT,

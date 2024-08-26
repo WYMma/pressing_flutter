@@ -2,6 +2,7 @@ import 'package:device_info_plus/device_info_plus.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:laundry/fragments/LSHomeFragment.dart';
+import 'package:laundry/fragmentsCourier/LSCourierHomeFragment.dart';
 import 'package:laundry/screens/resetPassword/LSForgotPasswordScreen.dart';
 import 'package:laundry/services/LSAuthService.dart';
 import 'package:laundry/utils/LSColors.dart';
@@ -210,43 +211,44 @@ class LSSignInScreenState extends State<LSSignInScreen> {
 
                       try {
                         if (isSignUp) {
-                          Map credsSignup = {
-                            'phone': phoneCont.text.trim(),
-                            'password': passCont.text.trim(),
-                            'first_name': firstNameCont.text.trim(),
-                            'last_name': lastNameCont.text.trim(),
-                            'cin': cinCont.text.trim(),
-                            'device_name': deviceName ?? 'unknown',
-                            'tokenFCM' : await  FirebaseMessaging.instance.getToken()
-                          };
-                          var authService = Provider.of<LSAuthService>(context, listen: false);
-                          await authService.register(creds: credsSignup);
-                          if (authService.user != null) {
-                              LSHomeFragment().launch(context);
-                              showToast(context, 'Inscription réussie');
-                          } else {
-                              showToast(context, 'Erreur lors de l\'inscription', isError: true);
+                          try {
+                            Map credsSignup = {
+                              'phone': phoneCont.text.trim(),
+                              'password': passCont.text.trim(),
+                              'first_name': firstNameCont.text.trim(),
+                              'last_name': lastNameCont.text.trim(),
+                              'cin': cinCont.text.trim(),
+                              'device_name': deviceName ?? 'unknown',
+                              'tokenFCM' : await  FirebaseMessaging.instance.getToken()
+                            };
+                            var authService = Provider.of<LSAuthService>(context, listen: false);
+                            await authService.register(creds: credsSignup);
+                            LSHomeFragment().launch(context);
+                            showToast(context, 'Inscription réussie');
+                          } catch (e) {
+                            showToast(context, 'Erreur lors de l\'inscription', isError: true);
                           }
                         } else {
-                          Map credsSignin = {
-                            'phone': phoneCont.text.trim(),
-                            'password': passCont.text.trim(),
-                            'device_name': deviceName ?? 'unknown',
-                            'tokenFCM' : await  FirebaseMessaging.instance.getToken()
-                          };
-                          var authService = Provider.of<LSAuthService>(context, listen: false);
-
-                          await authService.login(creds: credsSignin);
-
-                          if (authService.user != null) {
+                          try {
+                            Map credsSignin = {
+                              'phone': phoneCont.text.trim(),
+                              'password': passCont.text.trim(),
+                              'device_name': deviceName ?? 'unknown',
+                              'tokenFCM' : await  FirebaseMessaging.instance.getToken()
+                            };
+                            var authService = Provider.of<LSAuthService>(context, listen: false);
+                            await authService.login(creds: credsSignin);
                             if (authService.user!.role == 'Client') {
-                                LSHomeFragment().launch(context);
-                                showToast(context, 'Connexion réussie');
-                            } else {
-                                showToast(context, 'Veuillez vérifier vos données', isError: true);
-                            }
-                          } else {
+                              LSHomeFragment().launch(context);
+                              showToast(context, 'Connexion réussie');
+                            } else if (authService.user!.role == 'Transporteur') {
+                              LSCourierHomeFragment().launch(context);
+                              showToast(context, 'Connexion réussie');
+                            }else {
                               showToast(context, 'Veuillez vérifier vos données', isError: true);
+                            }
+                          } catch (e) {
+                            showToast(context, 'Veuillez vérifier vos données', isError: true);
                           }
                         }
                       } catch (e) {

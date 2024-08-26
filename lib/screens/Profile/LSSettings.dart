@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:laundry/components/LSNavBar.dart';
+import 'package:laundry/components/LSNavBarCourier.dart';
+import 'package:laundry/services/LSAuthService.dart';
 import 'package:laundry/utils/LSColors.dart';
 import 'package:nb_utils/nb_utils.dart';
 
 import 'package:laundry/screens/Profile/LSModifyProfilePage.dart';
 import 'package:laundry/screens/Profile/LSChangePasswordPage.dart';
 import 'package:laundry/screens/Profile/LSCreditsPage.dart';
+import 'package:provider/provider.dart';
 
 import '../../main.dart';
 
@@ -76,7 +79,7 @@ class _LSSettings extends State<LSSettings> {
           ),
         ],
       ),
-      bottomNavigationBar: LSNavBar(selectedIndex: _selectedIndex),
+      bottomNavigationBar: Provider.of<LSAuthService>(context, listen: false).user?.role == 'Client' ? LSNavBar(selectedIndex: _selectedIndex) : LSNavBarCourier(selectedIndex: 3),
     );
   }
 

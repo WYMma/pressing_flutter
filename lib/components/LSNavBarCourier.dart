@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:laundry/services/localDB/LSCartProvider.dart';
-import 'package:laundry/fragments/LSBookingFragment.dart';
-import 'package:laundry/fragments/LSHomeFragment.dart';
+import 'package:laundry/fragmentsCourier/LSMissionFragment.dart';
+import 'package:laundry/fragmentsCourier/LSCourierHomeFragment.dart';
 import 'package:laundry/fragments/LSProfileFragment.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:laundry/main.dart';
 import 'package:laundry/utils/LSColors.dart';
 import 'package:nb_utils/nb_utils.dart';
 import 'package:page_transition/page_transition.dart';
-import 'package:provider/provider.dart';
 
 class LSNavBarCourier extends StatelessWidget {
   final int selectedIndex;
@@ -16,9 +14,9 @@ class LSNavBarCourier extends StatelessWidget {
   LSNavBarCourier({required this.selectedIndex});
 
   final List<Widget> _widgetOptions = <Widget>[
-    LSHomeFragment(),
-    LSBookingFragment(),
+    LSCourierHomeFragment(),
     LSProfileFragment(),
+    LSMissionFragment(),
     LSProfileFragment(),
   ];
 
@@ -57,19 +55,8 @@ class LSNavBarCourier extends StatelessWidget {
                 text: 'Map',
               ),
               GButton(
-                icon: Icons.receipt_long_rounded,
-                text: 'Commandes',
-                leading: Badge(
-                  label: Consumer<LSCartProvider>(
-                    builder: (context, value, child) {
-                      return Text(
-                        value.getCounter().toString(),
-                        style: TextStyle(color: Colors.white),
-                      );
-                    },
-                  ),
-                  child: Icon(Icons.receipt_long_rounded, color: appStore.isDarkModeOn ? lightGrey : Colors.black),
-                ),
+                icon: Icons.local_shipping_rounded,
+                text: 'Missions',
               ),
               GButton(
                 icon: Icons.person,

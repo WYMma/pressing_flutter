@@ -2,6 +2,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:laundry/fragmentsCourier/LSCourierHomeFragment.dart';
+import 'package:laundry/screens/LSSignInScreen.dart';
 import 'package:laundry/services/api/LSAddressAPI.dart';
 import 'package:laundry/services/api/LSCreditCardAPI.dart';
 import 'package:laundry/services/api/firebase_api.dart';
@@ -62,7 +65,20 @@ class MyApp extends StatelessWidget {
       builder: (_) => MaterialApp(
         debugShowCheckedModeBanner: false,
         title: '$appName${!isMobile ? ' ${platformName()}' : ''}',
-        home: appStore.isSignedIn ? LSHomeFragment() : LSWalkThroughScreen(),
+        home: FutureBuilder<String?>(
+          future: FlutterSecureStorage().read(key: 'role'),
+          builder: (BuildContext context, AsyncSnapshot<String?> snapshot) {
+            if (!appStore.isSignedIn) {
+              return LSWalkThroughScreen();
+            } else if (snapshot.connectionState == ConnectionState.waiting) {
+              return CircularProgressIndicator(); // Or some loading screen
+            } else if (snapshot.hasError) {
+              return LSSignInScreen(); // Handle the error appropriately
+            } else {
+              return snapshot.data == 'Client' ? LSHomeFragment() : LSCourierHomeFragment();
+            }
+          },
+        ),
         theme: !appStore.isDarkModeOn ? AppThemeData.lightTheme : AppThemeData.darkTheme,
         navigatorKey: navigatorKey,
         scrollBehavior: SBehavior(),

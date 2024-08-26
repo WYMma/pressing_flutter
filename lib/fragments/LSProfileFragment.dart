@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:laundry/components/LSNavBarCourier.dart';
 import 'package:laundry/main.dart';
 import 'package:laundry/screens/LSNotificationsScreen.dart';
 import 'package:provider/provider.dart';
@@ -41,40 +42,52 @@ class LSProfileFragmentState extends State<LSProfileFragment> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: appBarWidget('Profile', center: true, color: context.cardColor, showBack: false, actions: [
-        InkWell(
-          onTap: () {
-            LSNotificationsScreen().launch(context);
+        Consumer<LSAuthService>(
+          builder: (context, authService, child) {
+            if (authService.user!.role == 'Client') {
+              return Row(
+                children: [
+                  InkWell(
+                    onTap: () {
+                      LSNotificationsScreen().launch(context);
+                    },
+                    child: Center(
+                      child: Badge(
+                        label: Text(LSNotificationsModel.unreadCount.toString(), style: const TextStyle(color: Colors.white)),
+                        child: Icon(LSNotificationsModel.unreadCount == 0 ? Icons.notifications_none : Icons.notifications, color: context.iconColor),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 10.0),
+                  InkWell(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => LSCartFragment()),
+                      );
+                    },
+                    child: Center(
+                      child: Badge(
+                        label: Consumer<LSCartProvider>(
+                          builder: (context, value, child) {
+                            return Text(
+                              value.getCounter().toString(),
+                              style: const TextStyle(color: Colors.white),
+                            );
+                          },
+                        ),
+                        child: Icon(Icons.shopping_cart, color: context.iconColor),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 20.0),
+                ],
+              );
+            } else {
+              return const SizedBox.shrink();
+            }
           },
-          child: Center(
-            child: Badge(
-              label: Text(LSNotificationsModel.unreadCount.toString(), style: const TextStyle(color: Colors.white)),
-              child: Icon(LSNotificationsModel.unreadCount == 0 ? Icons.notifications_none : Icons.notifications, color: context.iconColor),
-            ),
-          ),
         ),
-        const SizedBox(width: 10.0),
-        InkWell(
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => LSCartFragment()),
-            );
-          },
-          child: Center(
-            child: Badge(
-              label: Consumer<LSCartProvider>(
-                builder: (context, value, child) {
-                  return Text(
-                    value.getCounter().toString(),
-                    style: const TextStyle(color: Colors.white),
-                  );
-                },
-              ),
-              child: Icon(Icons.shopping_cart, color: context.iconColor),
-            ),
-          ),
-        ),
-        const SizedBox(width: 20.0),
       ]),
       backgroundColor: appStore.isDarkModeOn ? context.scaffoldBackgroundColor : LSColorSecondary,
       body: ListView(
@@ -95,7 +108,7 @@ class LSProfileFragmentState extends State<LSProfileFragment> {
                       ),
                       const SizedBox(height: 10),
                       Text(
-                        '${authService.client!.first_name} ${authService.client!.last_name}',
+                        authService.user!.role == 'Client' ? '${authService.client!.first_name} ${authService.client!.last_name}' : '${authService.transporteur!.first_name} ${authService.transporteur!.last_name}',
                         style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
@@ -117,20 +130,32 @@ class LSProfileFragmentState extends State<LSProfileFragment> {
               LSSettings().launch(context);
             },
           ),
-          buildProfileItem(
-            context,
-            icon: Icons.location_on_outlined,
-            title: "Location",
-            onTap: () {
-              LSSavedAddressesScreen().launch(context);
-            },
-          ),
-          buildProfileItem(
-            context,
-            icon: Icons.credit_card,
-            title: "Méthode de Paiement",
-            onTap: () {
-              LSSavedPaymentMethodsScreen().launch(context);
+          Consumer<LSAuthService>(
+            builder: (context, authService, child) {
+              if (authService.user!.role == 'Client') {
+                return Column(
+                  children: [
+                    buildProfileItem(
+                      context,
+                      icon: Icons.location_on_outlined,
+                      title: "Location",
+                      onTap: () {
+                        LSSavedAddressesScreen().launch(context);
+                      },
+                    ),
+                    buildProfileItem(
+                      context,
+                      icon: Icons.credit_card,
+                      title: "Méthode de Paiement",
+                      onTap: () {
+                        LSSavedPaymentMethodsScreen().launch(context);
+                      },
+                    ),
+                  ],
+                );
+              } else {
+                return SizedBox.shrink();
+              }
             },
           ),
           buildProfileItem(
@@ -160,49 +185,45 @@ class LSProfileFragmentState extends State<LSProfileFragment> {
             title: "Déconnexion",
             icon: CupertinoIcons.arrow_right_arrow_left,
             onTap: () {
-              _showLogoutConfirmationDialog();
+              showDialog(
+                context: context,
+                builder: (BuildContext dialogContext) {
+                  return AlertDialog(
+                    title: Text('Confirmation'),
+                    content: Text('Êtes-vous sûr de vouloir vous déconnecter ?'),
+                    actions: <Widget>[
+                      TextButton.icon(
+                        icon: Icon(Icons.cancel, color: LSColorPrimary),
+                        label: Text('Non', style: TextStyle(color: LSColorPrimary, fontWeight: FontWeight.bold)),
+                        onPressed: () {
+                          Navigator.of(dialogContext).pop(); // Close the dialog
+                        },
+                      ),
+                      TextButton.icon(
+                        icon: Icon(Icons.logout, color: Colors.red),
+                        label: Text('Oui', style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
+                        onPressed: () async {
+                          // Perform logout actions
+                          context.read<LSCartProvider>().clearCart();
+                          Navigator.of(dialogContext).pop();
+                          Navigator.of(context).pushAndRemoveUntil(
+                            MaterialPageRoute(builder: (context) => LSSignInScreen()),
+                                (Route<dynamic> route) => false,
+                          );
+                          var authService = Provider.of<LSAuthService>(context, listen: false);
+                          await authService.logout();
+                          Fluttertoast.showToast(msg: "Déconnexion réussie");
+                        },
+                      ),
+                    ],
+                  );
+                },
+              );
             },
           ),
         ],
       ),
-      bottomNavigationBar: LSNavBar(selectedIndex: _selectedIndex),
-    );
-  }
-
-  void _showLogoutConfirmationDialog() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Confirmation'),
-          content: Text('Êtes-vous sûr de vouloir vous déconnecter ?'),
-          actions: <Widget>[
-            TextButton.icon(
-              icon: Icon(Icons.cancel, color: LSColorPrimary), // Add your trailing icon
-              label: Text('Non', style: TextStyle(color: LSColorPrimary, fontWeight: FontWeight.bold)),
-              onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
-              },
-            ),
-            TextButton.icon(
-              icon: Icon(Icons.logout, color: Colors.red), // Add your trailing icon
-              label: Text('Oui', style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
-              onPressed: () async {
-                // Perform logout actions
-                context.read<LSCartProvider>().clearCart();
-                var authService = Provider.of<LSAuthService>(context, listen: false);
-                await authService.logout();
-                Navigator.of(context).pushAndRemoveUntil(
-                  MaterialPageRoute(builder: (context) => LSSignInScreen()),
-                      (Route<dynamic> route) => false,
-                );
-                Fluttertoast.showToast(msg: "Déconnexion réussie");
-                Navigator.of(context).pop(); // Close the dialog
-              },
-            ),
-          ],
-        );
-      },
+      bottomNavigationBar: Provider.of<LSAuthService>(context, listen: false).user?.role == 'Client' ? LSNavBar(selectedIndex: _selectedIndex) : LSNavBarCourier(selectedIndex: 3),
     );
   }
 }

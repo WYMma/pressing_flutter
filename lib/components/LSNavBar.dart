@@ -53,7 +53,7 @@ class LSNavBar extends StatelessWidget {
             tabs: [
               GButton(
                 icon: Icons.home,
-                text: 'Home',
+                text: 'Acceuil',
               ),
               GButton(
                 icon: Icons.percent_rounded,

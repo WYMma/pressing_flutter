@@ -1,4 +1,3 @@
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:laundry/components/LSNavBarCourier.dart';
 import 'package:nb_utils/nb_utils.dart';
@@ -8,7 +7,7 @@ import '../main.dart';
 import '../utils/LSColors.dart';
 
 class LSMissionFragment extends StatefulWidget {
-  static String tag = '/LSBookingFragment';
+  static String tag = '/LSMissionFragment';
 
   @override
   LSMissionFragmentState createState() => LSMissionFragmentState();
@@ -20,9 +19,6 @@ class LSMissionFragmentState extends State<LSMissionFragment> {
   void initState() {
     super.initState();
     init();
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      setState(() {});
-    });
   }
 
   init() async {
@@ -42,7 +38,7 @@ class LSMissionFragmentState extends State<LSMissionFragment> {
       child: Scaffold(
         backgroundColor: appStore.isDarkModeOn ? context.scaffoldBackgroundColor : LSColorSecondary,
         appBar: appBarWidget(
-          'Historique',
+          'Missions',
           center: true,
           showBack: false,
           color: context.cardColor,

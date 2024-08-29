@@ -8,16 +8,18 @@ import 'package:laundry/utils/LSColors.dart';
 import 'package:nb_utils/nb_utils.dart';
 import 'package:page_transition/page_transition.dart';
 
+import 'package:laundry/fragmentsCourier/LSMapFragment.dart';
+
 class LSNavBarCourier extends StatelessWidget {
   final int selectedIndex;
 
-  LSNavBarCourier({required this.selectedIndex});
+  LSNavBarCourier({super.key, required this.selectedIndex});
 
   final List<Widget> _widgetOptions = <Widget>[
-    LSCourierHomeFragment(),
-    LSProfileFragment(),
+    const LSCourierHomeFragment(),
+    LSMapFragment(),
     LSMissionFragment(),
-    LSProfileFragment(),
+    const LSProfileFragment(),
   ];
 
   @override
@@ -41,14 +43,14 @@ class LSNavBarCourier extends StatelessWidget {
             gap: 8,
             activeColor: appStore.isDarkModeOn ? lightGrey : Colors.black,
             iconSize: 24,
-            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            duration: Duration(milliseconds: 400),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            duration: const Duration(milliseconds: 400),
             tabBackgroundColor: LSColorPrimary.withOpacity(0.7),
             color: appStore.isDarkModeOn ? lightGrey : Colors.black,
-            tabs: [
+            tabs: const [
               GButton(
                 icon: Icons.home,
-                text: 'Home',
+                text: 'Acceuil',
               ),
               GButton(
                 icon: Icons.pin_drop_rounded,
@@ -70,8 +72,8 @@ class LSNavBarCourier extends StatelessWidget {
                 PageTransition(
                   alignment: Alignment.bottomCenter,
                   curve: Curves.easeInOut,
-                  duration: Duration(milliseconds: 50),
-                  reverseDuration: Duration(milliseconds: 50),
+                  duration: const Duration(milliseconds: 50),
+                  reverseDuration: const Duration(milliseconds: 50),
                   type: selectedIndex>index? PageTransitionType.leftToRight:PageTransitionType.rightToLeft,
                   child: _widgetOptions[index],
                   childCurrent: _widgetOptions[selectedIndex],

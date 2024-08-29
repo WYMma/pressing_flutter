@@ -125,10 +125,6 @@ class LSCreditsPage extends StatelessWidget {
                 ),
               ),
             ),
-            Divider(
-              thickness: 1.0,
-              color: Colors.grey[400],
-            ),
             Padding(
               padding: const EdgeInsetsDirectional.fromSTEB(16.0, 25.0, 16.0, 50.0),
               child: Card(

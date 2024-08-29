@@ -2,6 +2,7 @@ import 'package:dio/dio.dart' as Dio;
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:laundry/main.dart';
+import 'package:laundry/model/APIKey.dart';
 import 'package:laundry/model/transporteur.dart';
 import 'package:laundry/model/user.dart';
 import 'package:laundry/services/dio.dart';
@@ -182,5 +183,37 @@ class LSAuthService extends ChangeNotifier {
     appStore.isSignedIn = _isLoggedIn;
     _token = null;
     await storage.delete(key: 'token');
+    await storage.delete(key: 'role');
+  }
+
+  Future<void> retrieveApiKeys() async {
+    try {
+      String? token = await storage.read(key: 'token');
+      if (token == null) {
+        print('No token found, unable to retrieve API keys.');
+        return;
+      }
+
+      Dio.Response response = await dio().get(
+        '/api-keys',  // Assuming this is the endpoint to retrieve API keys
+        options: Dio.Options(headers: {'Authorization': 'Bearer $token'}),
+      );
+
+      // Clear the existing list
+      APIKey.apiKeyList.clear();
+
+      // Populate the static list with the retrieved API keys
+      List<dynamic> apiKeysJson = response.data;
+      for (var apiKeyJson in apiKeysJson) {
+        APIKey apiKey = APIKey.fromJson(apiKeyJson);
+        APIKey.addApiKey(apiKey);
+      }
+
+      print('API keys successfully retrieved and stored.');
+      print(APIKey.apiKeyList);
+      notifyListeners();
+    } catch (e) {
+      print('Failed to retrieve API keys: $e');
+    }
   }
 }

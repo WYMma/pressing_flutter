@@ -151,33 +151,33 @@ class LSProfileFragmentState extends State<LSProfileFragment> {
                         LSSavedPaymentMethodsScreen().launch(context);
                       },
                     ),
+                    buildProfileItem(
+                      context,
+                      title: "Notifications",
+                      icon: CupertinoIcons.bell,
+                      trailing: Switch(
+                        value: isNotificationsEnabled,
+                        activeColor: LSColorPrimary,
+                        activeTrackColor: LSColorSecondary,
+                        onChanged: (value) {
+                          setState(() {
+                            isNotificationsEnabled = value;
+                            appStore.toggleNotificationsStatus(value: value);
+                          });
+                        },
+                      ),
+                      onTap: () {
+                        setState(() {
+                          isNotificationsEnabled = !isNotificationsEnabled;
+                          appStore.toggleNotificationsStatus(value: isNotificationsEnabled);
+                        });
+                      },
+                    ),
                   ],
                 );
               } else {
                 return SizedBox.shrink();
               }
-            },
-          ),
-          buildProfileItem(
-            context,
-            title: "Notifications",
-            icon: CupertinoIcons.bell,
-            trailing: Switch(
-              value: isNotificationsEnabled,
-              activeColor: LSColorPrimary,
-              activeTrackColor: LSColorSecondary,
-              onChanged: (value) {
-                setState(() {
-                  isNotificationsEnabled = value;
-                  appStore.toggleNotificationsStatus(value: value);
-                });
-              },
-            ),
-            onTap: () {
-              setState(() {
-                isNotificationsEnabled = !isNotificationsEnabled;
-                appStore.toggleNotificationsStatus(value: isNotificationsEnabled);
-              });
             },
           ),
           buildProfileItem(

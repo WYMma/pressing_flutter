@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:laundry/fragmentsCourier/LSCourierHomeFragment.dart';
+import 'package:laundry/screens/LSNoInternet.dart';
 import 'package:laundry/screens/LSSignInScreen.dart';
 import 'package:laundry/services/api/LSAddressAPI.dart';
 import 'package:laundry/services/api/LSCreditCardAPI.dart';
@@ -65,17 +66,24 @@ class MyApp extends StatelessWidget {
       builder: (_) => MaterialApp(
         debugShowCheckedModeBanner: false,
         title: '$appName${!isMobile ? ' ${platformName()}' : ''}',
-        home: FutureBuilder<String?>(
-          future: FlutterSecureStorage().read(key: 'role'),
-          builder: (BuildContext context, AsyncSnapshot<String?> snapshot) {
-            if (!appStore.isSignedIn) {
-              return LSWalkThroughScreen();
-            } else if (snapshot.connectionState == ConnectionState.waiting) {
-              return CircularProgressIndicator(); // Or some loading screen
-            } else if (snapshot.hasError) {
-              return LSSignInScreen(); // Handle the error appropriately
+        home: StreamBuilder<List<ConnectivityResult>>(
+          stream: Connectivity().onConnectivityChanged,
+          builder: (BuildContext context, AsyncSnapshot<List<ConnectivityResult>> streamSnapshot) {
+            if (streamSnapshot.connectionState == ConnectionState.none) {
+              return LSNoInternet();
             } else {
-              return snapshot.data == 'Client' ? LSHomeFragment() : LSCourierHomeFragment();
+              return FutureBuilder<String?>(
+                future: FlutterSecureStorage().read(key: 'role'),
+                builder: (BuildContext context, AsyncSnapshot<String?> futureSnapshot) {
+                  if (!appStore.isSignedIn) {
+                    return LSWalkThroughScreen();
+                  } else if (futureSnapshot.hasError) {
+                    return LSSignInScreen(); // Handle future error
+                  } else {
+                    return futureSnapshot.data == 'Client' ? LSHomeFragment() : LSCourierHomeFragment();
+                  }
+                },
+              );
             }
           },
         ),

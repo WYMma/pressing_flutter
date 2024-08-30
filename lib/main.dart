@@ -6,7 +6,8 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:laundry/fragmentsCourier/LSCourierHomeFragment.dart';
 import 'package:laundry/screens/LSNoInternet.dart';
 import 'package:laundry/screens/LSSignInScreen.dart';
-import 'package:laundry/services/LSServicesAPI.dart';
+import 'package:laundry/services/api/LSSalesAPI.dart';
+import 'package:laundry/services/api/LSServicesAPI.dart';
 import 'package:laundry/services/api/LSAddressAPI.dart';
 import 'package:laundry/services/api/LSCreditCardAPI.dart';
 import 'package:laundry/services/api/firebase_api.dart';
@@ -53,6 +54,7 @@ void main() async {
         ChangeNotifierProvider(create: (_) => LSAddressAPI()),
         ChangeNotifierProvider(create: (_) => LSCreditCardAPI()),
         ChangeNotifierProvider(create: (_) => LSServicesAPI()),
+        ChangeNotifierProvider(create: (_) => LSSalesAPI()),
       ],
       child: MyApp(),
     ),

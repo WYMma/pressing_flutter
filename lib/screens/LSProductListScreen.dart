@@ -28,16 +28,16 @@ class _LSProductListScreenState extends State<LSProductListScreen> {
   ];
 
   final List<LSItemModel> products = [
-    LSItemModel(name: 'Capuche', price: 20, image: LSSweatshirt, category: 'Homme', productId: '1'),
-    LSItemModel(name: 'Chemise', price: 30, image: LSShirt1, category: 'Homme', productId: '2'),
-    LSItemModel(name: 'Polo', price: 10, image: LSShirt, category: 'Homme', productId: '3'),
-    LSItemModel(name: 'Blazer', price: 8, image: LSShot, category: 'Homme', productId: '4'),
-    LSItemModel(name: 'Costume', price: 25, image: LSSuit, category: 'Homme', productId: '5'),
-    LSItemModel(name: 'Draps', price: 40, image: LSTowel, category: 'Homme', productId: '6'),
-    LSItemModel(name: 'Robe', price: 15, image: LSDress, category: 'Femme', productId: '7'),
-    LSItemModel(name: 'Peach', price: 8, image: LSSweatshirt, category: 'Femme', productId: '8'),
-    LSItemModel(name: 'Strawberry', price: 12, image: LSSweatshirt, category: 'Femme', productId: '9'),
-    LSItemModel(name: 'Fruit Basket', price: 55, image: LSSweatshirt, category: 'Femme', productId: '10'),
+    LSItemModel(name: 'Capuche', price: 20, photo: LSSweatshirt, categorieID: 'Homme', itemID: '1'),
+    LSItemModel(name: 'Chemise', price: 30, photo: LSShirt1, categorieID: 'Homme', itemID: '2'),
+    LSItemModel(name: 'Polo', price: 10, photo: LSShirt, categorieID: 'Homme', itemID: '3'),
+    LSItemModel(name: 'Blazer', price: 8, photo: LSShot, categorieID: 'Homme', itemID: '4'),
+    LSItemModel(name: 'Costume', price: 25, photo: LSSuit, categorieID: 'Homme', itemID: '5'),
+    LSItemModel(name: 'Draps', price: 40, photo: LSTowel, categorieID: 'Homme', itemID: '6'),
+    LSItemModel(name: 'Robe', price: 15, photo: LSDress, categorieID: 'Femme', itemID: '7'),
+    LSItemModel(name: 'Peach', price: 8, photo: LSSweatshirt, categorieID: 'Femme', itemID: '8'),
+    LSItemModel(name: 'Strawberry', price: 12, photo: LSSweatshirt, categorieID: 'Femme', itemID: '9'),
+    LSItemModel(name: 'Fruit Basket', price: 55, photo: LSSweatshirt, categorieID: 'Femme', itemID: '10'),
   ];
 
   String selectedCategory = 'Tout';
@@ -57,7 +57,7 @@ class _LSProductListScreenState extends State<LSProductListScreen> {
 
     List<LSItemModel> filteredProducts = selectedCategory == 'Tout'
         ? products
-        : products.where((product) => product.category == selectedCategory).toList();
+        : products.where((product) => product.categorieID == selectedCategory).toList();
 
     return Scaffold(
       appBar: appBarWidget(
@@ -153,7 +153,7 @@ class _LSProductListScreenState extends State<LSProductListScreen> {
                   child: Padding(
                     padding: EdgeInsets.all(20.0),
                     child: ListTile(
-                      leading: Image.asset(product.image),
+                      leading: Image.asset(product.photo),
                       title: Text(product.name),
                       subtitle: Text('${product.price} DT'),
                       trailing: AppButton(
@@ -171,14 +171,14 @@ class _LSProductListScreenState extends State<LSProductListScreen> {
                           );
                           dbHelper.insertItem(
                             LSCartModel(
-                              id: int.parse(product.productId), // Use productId as id
-                              productId: product.productId,
+                              id: int.parse(product.itemID), // Use productId as id
+                              productId: product.itemID,
                               productName: product.name,
                               initialPrice: product.price,
                               productPrice: product.price,
                               quantity: ValueNotifier(1),
-                              unitTag: product.category,
-                              image: product.image,
+                              unitTag: product.categorieID,
+                              image: product.photo,
                             ),
                           );
                         },

@@ -1,17 +1,19 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:laundry/components/LSNavBar.dart';
-import 'package:laundry/services/localDB/LSCartProvider.dart';
 import 'package:laundry/fragments/LSCartFragment.dart';
 import 'package:laundry/main.dart';
 import 'package:laundry/model/LSNotificationsModel.dart';
-import 'package:laundry/model/LSServiceModel.dart';
+import 'package:laundry/model/LSSalesModel.dart';
 import 'package:laundry/screens/LSCoupon.dart';
-import 'package:laundry/utils/LSColors.dart';
-import 'package:laundry/utils/LSWidgets.dart';
+import 'package:laundry/screens/LSNotificationsScreen.dart';
+import 'package:laundry/services/api/LSSalesAPI.dart';
+import 'package:laundry/services/localDB/LSCartProvider.dart';
 import 'package:nb_utils/nb_utils.dart';
 import 'package:provider/provider.dart';
-import '../screens/LSNotificationsScreen.dart';
+
+import '../utils/LSColors.dart';
+import '../utils/LSWidgets.dart';
 
 class LSOfferFragment extends StatefulWidget {
   static String tag = '/LSOfferFragment';
@@ -21,7 +23,6 @@ class LSOfferFragment extends StatefulWidget {
 }
 
 class LLSOfferFragmentState extends State<LSOfferFragment> {
-
   int _selectedIndex = 1;
 
   @override
@@ -33,8 +34,13 @@ class LLSOfferFragmentState extends State<LSOfferFragment> {
     });
   }
 
-  init() async {
+  Future<void> init() async {
     setStatusBarColor(appStore.isDarkModeOn ? context.cardColor : Colors.white);
+    try {
+      await Provider.of<LSSalesAPI>(context, listen: false).getAllSales();
+    } catch (e) {
+      print('Error fetching sales: $e');
+    }
   }
 
   @override
@@ -48,8 +54,14 @@ class LLSOfferFragmentState extends State<LSOfferFragment> {
     if (mounted) super.setState(fn);
   }
 
+  bool isOfferExpired(DateTime endDate) {
+    return DateTime.now().isAfter(endDate);
+  }
+
   @override
   Widget build(BuildContext context) {
+    final sales = LSSalesModel.sales;
+
     return Scaffold(
       appBar: appBarWidget(
         'Nos offres',
@@ -95,46 +107,49 @@ class LLSOfferFragmentState extends State<LSOfferFragment> {
       ),
       backgroundColor: appStore.isDarkModeOn ? context.scaffoldBackgroundColor : LSColorSecondary,
       body: ListView.builder(
-          itemCount: getOfferList().length,
-          shrinkWrap: true,
-          padding: EdgeInsets.all(8),
-          itemBuilder: (_, i) {
-            LSServiceModel data = getOfferList()[i];
-            return Container(
-              margin: EdgeInsets.all(8),
-              padding: EdgeInsets.only(top: 24, bottom: 24, left: 8, right: 8),
-              decoration: boxDecorationRoundedWithShadow(8, backgroundColor: context.cardColor),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  commonCacheImageWidget(data.img.validate(), 80, fit: BoxFit.cover).center(),
-                  16.width,
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Text(data.title.validate(), style: primaryTextStyle()),
-                      Text(data.subTitle.validate(), style: primaryTextStyle(color: LSColorPrimary, size: 18)),
-                      8.height,
-                    ],
-                  ).expand(),
-                  8.width,
-                  AppButton(
-                    padding: EdgeInsets.only(top: 8, bottom: 8, right: 16, left: 16),
-                    onTap: () {
-                      LSCoupon().launch(context);
-                    },
-                    text: 'View Offer',
-                    textColor: white,
-                    color: LSColorPrimary,
-                  )
-                ],
-              ),
-            ).onTap(() {
-            });
-          }),
+        itemCount: sales.length,
+        shrinkWrap: true,
+        padding: EdgeInsets.all(8),
+        itemBuilder: (_, i) {
+          final sale = sales[i];
+          bool expired = isOfferExpired(sale.endDate);
+
+          return Container(
+            margin: EdgeInsets.all(16),
+            padding: EdgeInsets.only(top: 24, bottom: 24, left: 12, right: 12),
+            decoration: boxDecorationRoundedWithShadow(8, backgroundColor: context.cardColor),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                commonCacheImageWidget('http://127.0.0.1:8000'+sale.image, 80, fit: BoxFit.cover).center(),
+                16.width,
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Text(sale.name.validate(), style: primaryTextStyle()),
+                    Text('Obtenez ${sale.discount.floor()}% de réduction', style: primaryTextStyle(color: LSColorPrimary, size: 16)),
+                    AppButton(
+                      padding: EdgeInsets.only(top: 8, bottom: 8, right: 24, left: 24),
+                      textColor: white,
+                      text: expired ? "Expiré" : "Voir l'offre",
+                      onTap: () {
+                        if (!expired) {
+                          LSCoupon().launch(context);
+                        }
+                      },
+                      color: expired ? Colors.grey : LSColorPrimary,
+                    ).paddingOnly(top: 8),
+                  ],
+                ).expand(),
+              ],
+            ),
+          ).onTap(() {
+            // Handle tap if needed
+          });
+        },
+      ),
       bottomNavigationBar: LSNavBar(selectedIndex: _selectedIndex),
     );
   }
-
 }

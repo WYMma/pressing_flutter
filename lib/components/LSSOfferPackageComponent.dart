@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:laundry/model/LSSalesModel.dart';
 import 'package:laundry/screens/LSCoupon.dart';
 import 'package:nb_utils/nb_utils.dart';
+import 'package:provider/provider.dart';
 
-import '../model/LSServiceModel.dart';
-import '../screens/ServiceDetail/LSServiceDetailScreen.dart';
+import '../services/api/LSSalesAPI.dart';
 import '../utils/LSColors.dart';
 import '../utils/LSWidgets.dart';
 
 class LSSOfferPackageComponent extends StatefulWidget {
-  static String tag = '/LSServiceNearByComponent';
+  static String tag = '/LSOfferPackageComponent';
 
   @override
   LSSOfferPackageComponentState createState() => LSSOfferPackageComponentState();
@@ -21,8 +22,16 @@ class LSSOfferPackageComponentState extends State<LSSOfferPackageComponent> {
     init();
   }
 
-  init() async {
-    //
+  Future<void> init() async {
+    try {
+      await Provider.of<LSSalesAPI>(context, listen: false).getAllSales();
+    } catch (e) {
+      print('Error fetching sales: $e');
+    }
+  }
+
+  bool isOfferExpired(DateTime endDate) {
+    return DateTime.now().isAfter(endDate);
   }
 
   @override
@@ -32,10 +41,12 @@ class LSSOfferPackageComponentState extends State<LSSOfferPackageComponent> {
 
   @override
   Widget build(BuildContext context) {
+
     return HorizontalList(
-      itemCount: getOfferList().take(4).length,
+      itemCount: LSSalesModel.sales.take(4).length,
       itemBuilder: (BuildContext context, int index) {
-        LSServiceModel data = getOfferList()[index];
+        final sale = LSSalesModel.sales[index];
+        bool expired = isOfferExpired(sale.endDate);
 
         return Container(
           width: 280,
@@ -46,30 +57,32 @@ class LSSOfferPackageComponentState extends State<LSSOfferPackageComponent> {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              commonCacheImageWidget(data.img.validate(), 80, fit: BoxFit.cover).center(),
+              commonCacheImageWidget('http://127.0.0.1:8000' + sale.image, 80, fit: BoxFit.cover).center(),
               16.width,
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  Text(data.title.validate(), style: primaryTextStyle()),
-                  Text(data.subTitle.validate(), style: primaryTextStyle(color: LSColorPrimary, size: 18)),
+                  Text(sale.name.validate(), style: primaryTextStyle()),
+                  Text('Promotion: ${sale.discount.floor()}%', style: primaryTextStyle(color: LSColorPrimary, size: 18)),
                   8.height,
                   AppButton(
                     padding: EdgeInsets.only(top: 8, bottom: 8, right: 16, left: 16),
-                    onTap: () {
-                      LSCoupon().launch(context);
-                    },
-                    text: 'View Offer',
                     textColor: white,
-                    color: LSColorPrimary,
+                    text: expired ? "Expiré" : "Voir l'offre",
+                    onTap: () {
+                      if (!expired) {
+                        LSCoupon().launch(context);
+                      }
+                    },
+                    color: expired ? Colors.grey : LSColorPrimary,
                   )
                 ],
               )
             ],
           ),
         ).onTap(() {
-          LSServiceDetailScreen().launch(context);
+          // Handle tap if needed
         });
       },
     );

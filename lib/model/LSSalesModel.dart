@@ -26,7 +26,7 @@ class LSSalesModel {
       saleID: json['saleID'],
       name: json['name'],
       description: json['description'],
-      discount: json['discount'].toDouble(),
+      discount: double.parse(json['discount']),
       startDate: DateTime.parse(json['start_date']),
       endDate: DateTime.parse(json['end_date']),
       image: json['image'],
@@ -51,4 +51,6 @@ class LSSalesModel {
   String toString() {
     return jsonEncode(this);
   }
+
+  static List<LSSalesModel> sales = [];
 }

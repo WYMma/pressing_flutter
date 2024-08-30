@@ -72,9 +72,5 @@ List<LSServiceModel> getOfferList() {
   list.add(LSServiceModel(title: 'For a Limited time', rating: '4.5', subTitle: 'Get 50% off', img: LSWashService));
   list.add(LSServiceModel(title: 'For a Limited time', rating: '2', subTitle: 'Get 50% off', img: LSSweatshirt));
   list.add(LSServiceModel(title: 'For a Limited time', rating: '3', subTitle: 'Get 50% off', img: LSWashingMachine));
-  list.add(LSServiceModel(title: 'For a Limited time', rating: '5', subTitle: 'Get 50% off', img: LSWashingClothes));
-  list.add(LSServiceModel(title: 'For a Limited time', rating: '4.5', subTitle: 'Get 50% off', img: LSWashService));
-  list.add(LSServiceModel(title: 'For a Limited time', rating: '2', subTitle: 'Get 50% off', img: LSSweatshirt));
-  list.add(LSServiceModel(title: 'For a Limited time', rating: '3', subTitle: 'Get 50% off', img: LSWashingMachine));
   return list;
 }

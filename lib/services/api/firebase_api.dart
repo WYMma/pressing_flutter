@@ -1,8 +1,10 @@
 import 'dart:convert';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:laundry/model/LSNotificationsModel.dart';
+import 'package:laundry/screens/LSNotificationsScreen.dart';
 import 'package:nb_utils/nb_utils.dart';
 
 class FirebaseAPI {
@@ -20,7 +22,7 @@ class FirebaseAPI {
 
   void handleMessage(RemoteMessage? message) {
     if (message == null) return;
-    navigatorKey.currentState!.pushNamed('/LSNotificationScreen');
+    Navigator.of(navigatorKey.currentContext!).pushNamed(LSNotificationsScreen.tag);
   }
 
   Future<void> initPushNotifications() async {

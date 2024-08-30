@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:laundry/model/LSServicesModel.dart';
 import 'package:laundry/screens/LSProductListScreen.dart';
+import 'package:laundry/services/LSServicesAPI.dart';
 import 'package:nb_utils/nb_utils.dart';
+import 'package:provider/provider.dart';
 
-import '../model/LSServiceModel.dart';
 import '../utils/LSWidgets.dart';
 
 class LSTopServiceComponent extends StatefulWidget {
@@ -13,27 +15,36 @@ class LSTopServiceComponent extends StatefulWidget {
 }
 
 class LSTopServiceComponentState extends State<LSTopServiceComponent> {
+  bool isLoading = true;
+
   @override
   void initState() {
     super.initState();
     init();
   }
 
-  init() async {
-    //
-  }
-
-  @override
-  void setState(fn) {
-    if (mounted) super.setState(fn);
+  Future<void> init() async {
+    try {
+      await Provider.of<LSServicesAPI>(context, listen: false).getAllServices();
+    } catch (e) {
+      print('Error fetching services: $e');
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    if (isLoading) {
+      return Center(child: CircularProgressIndicator());
+    }
+
     return HorizontalList(
-      itemCount: getTopServiceList().length,
+      itemCount: LSServicesModel.services.length,
       itemBuilder: (BuildContext context, int index) {
-        LSServiceModel data = getTopServiceList()[index];
+        LSServicesModel data = LSServicesModel.services[index];
 
         return Column(
           children: [
@@ -42,11 +53,11 @@ class LSTopServiceComponentState extends State<LSTopServiceComponent> {
               width: 80,
               alignment: Alignment.center,
               margin: EdgeInsets.all(8),
-              decoration: boxDecorationRoundedWithShadow(40, backgroundColor: context.cardColor),
-              child: commonCacheImageWidget(data.img.validate(), 50, width: 50, fit: BoxFit.cover),
+              decoration: boxDecorationRoundedWithShadow(25, backgroundColor: context.cardColor),
+              child: commonCacheImageWidget('http://127.0.0.1:8000' + data.image, 50, width: 50, fit: BoxFit.cover),
             ),
             8.height,
-            Text(data.title.validate(), style: primaryTextStyle()),
+            Text(data.name.validate(), style: primaryTextStyle()),
           ],
         ).onTap(() {
           LSProductListScreen().launch(context);
@@ -55,3 +66,4 @@ class LSTopServiceComponentState extends State<LSTopServiceComponent> {
     );
   }
 }
+

@@ -22,8 +22,6 @@ class LSSignInScreen extends StatefulWidget {
 class LSSignInScreenState extends State<LSSignInScreen> {
   bool isSignUp = false;
   bool isLoading = false;
-  final int maxRetries = 3;  // Maximum number of retries
-  final Duration retryDelay = Duration(seconds: 2);  // Delay between retries
 
   // Controllers
   TextEditingController phoneCont = TextEditingController();
@@ -219,7 +217,7 @@ class LSSignInScreenState extends State<LSSignInScreen> {
                               'last_name': lastNameCont.text.trim(),
                               'cin': cinCont.text.trim(),
                               'device_name': deviceName ?? 'unknown',
-                              'tokenFCM' : await  FirebaseMessaging.instance.getToken()
+                              'tokenFCM' : await FirebaseMessaging.instance.getToken()
                             };
                             var authService = Provider.of<LSAuthService>(context, listen: false);
                             await authService.register(creds: credsSignup);
@@ -234,17 +232,24 @@ class LSSignInScreenState extends State<LSSignInScreen> {
                               'phone': phoneCont.text.trim(),
                               'password': passCont.text.trim(),
                               'device_name': deviceName ?? 'unknown',
-                              'tokenFCM' : await  FirebaseMessaging.instance.getToken()
+                              'tokenFCM' : await FirebaseMessaging.instance.getToken()
                             };
+
                             var authService = Provider.of<LSAuthService>(context, listen: false);
-                            await authService.login(creds: credsSignin);
-                            if (authService.user!.role == 'Client') {
+                            await authService.login(creds: credsSignin);  // Ensure this completes first
+
+                            // Retrieve the role after login is complete
+                            print('Retrieving role');
+                            String role = await authService.user!.role;
+                            print('Role: $role');
+
+                            if (role == 'Client') {
                               LSHomeFragment().launch(context);
                               showToast(context, 'Connexion réussie');
-                            } else if (authService.user!.role == 'Transporteur') {
+                            } else if (role == 'Transporteur') {
                               LSCourierHomeFragment().launch(context);
                               showToast(context, 'Connexion réussie');
-                            }else {
+                            } else {
                               showToast(context, 'Veuillez vérifier vos données', isError: true);
                             }
                           } catch (e) {

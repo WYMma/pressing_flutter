@@ -27,7 +27,7 @@ class LSAuthService extends ChangeNotifier {
       Dio.Response response = await dio().post('/sanctum/token', data: creds);
       print(response.data.toString());
       _token = response.data.toString();
-      tryToken(token: _token);
+      await tryToken(token: _token);
       notifyListeners();
 
     } on Exception catch (e) {

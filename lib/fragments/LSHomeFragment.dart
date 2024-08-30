@@ -1,6 +1,7 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:laundry/services/LSServicesAPI.dart';
 import 'package:laundry/services/api/LSAddressAPI.dart';
 import 'package:laundry/services/api/LSCreditCardAPI.dart';
 import 'package:laundry/components/LSNavBar.dart';
@@ -150,6 +151,7 @@ class LSHomeFragmentState extends State<LSHomeFragment> {
 
       Provider.of<LSAddressAPI>(context, listen: false).getAddress(authService.client?.clientID);
       Provider.of<LSCreditCardAPI>(context, listen: false).getCreditCard(authService.client?.clientID);
+      Provider.of<LSServicesAPI>(context, listen: false).getAllServices();
     } on Exception catch (e) {
       print(e);
     } finally {

@@ -2,8 +2,10 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:laundry/main.dart';
 import 'package:laundry/model/LSNotificationsModel.dart';
+import 'package:laundry/services/api/LSItemAPI.dart';
 import 'package:laundry/utils/LSColors.dart';
-import 'package:laundry/utils/LSImages.dart';
+import 'package:laundry/utils/LSContstants.dart';
+import 'package:laundry/utils/LSWidgets.dart';
 import 'package:nb_utils/nb_utils.dart';
 import 'package:provider/provider.dart';
 import 'package:laundry/services/localDB/LSCartProvider.dart';
@@ -20,24 +22,12 @@ class LSProductListScreen extends StatefulWidget {
 }
 
 class _LSProductListScreenState extends State<LSProductListScreen> {
+
   final List<String> categories = [
     'Tout',
     'Homme',
     'Femme',
     'Enfant',
-  ];
-
-  final List<LSItemModel> products = [
-    LSItemModel(name: 'Capuche', price: 20, photo: LSSweatshirt, categorieID: 'Homme', itemID: '1'),
-    LSItemModel(name: 'Chemise', price: 30, photo: LSShirt1, categorieID: 'Homme', itemID: '2'),
-    LSItemModel(name: 'Polo', price: 10, photo: LSShirt, categorieID: 'Homme', itemID: '3'),
-    LSItemModel(name: 'Blazer', price: 8, photo: LSShot, categorieID: 'Homme', itemID: '4'),
-    LSItemModel(name: 'Costume', price: 25, photo: LSSuit, categorieID: 'Homme', itemID: '5'),
-    LSItemModel(name: 'Draps', price: 40, photo: LSTowel, categorieID: 'Homme', itemID: '6'),
-    LSItemModel(name: 'Robe', price: 15, photo: LSDress, categorieID: 'Femme', itemID: '7'),
-    LSItemModel(name: 'Peach', price: 8, photo: LSSweatshirt, categorieID: 'Femme', itemID: '8'),
-    LSItemModel(name: 'Strawberry', price: 12, photo: LSSweatshirt, categorieID: 'Femme', itemID: '9'),
-    LSItemModel(name: 'Fruit Basket', price: 55, photo: LSSweatshirt, categorieID: 'Femme', itemID: '10'),
   ];
 
   String selectedCategory = 'Tout';
@@ -48,6 +38,15 @@ class _LSProductListScreenState extends State<LSProductListScreen> {
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       setState(() {});
     });
+    init();
+  }
+
+  Future<void> init() async {
+    try {
+      await Provider.of<LSItemAPI>(context, listen: false).getAllItems();
+    } catch (e) {
+      print('Error fetching sales: $e');
+    }
   }
 
   @override
@@ -56,8 +55,8 @@ class _LSProductListScreenState extends State<LSProductListScreen> {
     final dbHelper = LSDBHelper();
 
     List<LSItemModel> filteredProducts = selectedCategory == 'Tout'
-        ? products
-        : products.where((product) => product.categorieID == selectedCategory).toList();
+        ? LSItemModel.items
+        : LSItemModel.items.where((product) => product.categorieID == selectedCategory).toList();
 
     return Scaffold(
       appBar: appBarWidget(
@@ -153,7 +152,7 @@ class _LSProductListScreenState extends State<LSProductListScreen> {
                   child: Padding(
                     padding: EdgeInsets.all(20.0),
                     child: ListTile(
-                      leading: Image.asset(product.photo),
+                      leading: commonCacheImageWidget(host + product.photo, 80, fit: BoxFit.cover),
                       title: Text(product.name),
                       subtitle: Text('${product.price} DT'),
                       trailing: AppButton(

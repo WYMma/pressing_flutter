@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:laundry/model/LSSalesModel.dart';
 import 'package:laundry/screens/LSCoupon.dart';
+import 'package:laundry/utils/LSContstants.dart';
 import 'package:nb_utils/nb_utils.dart';
 import 'package:provider/provider.dart';
 
@@ -57,7 +58,7 @@ class LSSOfferPackageComponentState extends State<LSSOfferPackageComponent> {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              commonCacheImageWidget('http://127.0.0.1:8000' + sale.image, 80, fit: BoxFit.cover).center(),
+              commonCacheImageWidget(host + sale.image, 80, fit: BoxFit.cover).center(),
               16.width,
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,

@@ -7,6 +7,8 @@ import 'package:laundry/model/LSOrder.dart';
 import 'package:laundry/screens/LSNotificationsScreen.dart';
 import 'package:laundry/screens/LSSchedule/LSScheduleScreen.dart';
 import 'package:laundry/utils/LSColors.dart';
+import 'package:laundry/utils/LSContstants.dart';
+import 'package:laundry/utils/LSWidgets.dart';
 import 'package:nb_utils/nb_utils.dart';
 import 'package:provider/provider.dart';
 import 'package:laundry/services/localDB/LSCartProvider.dart';
@@ -98,7 +100,7 @@ class _LSCartFragmentState extends State<LSCartFragment> {
                         child: ListTile(
                           contentPadding: EdgeInsets.all(15),
                           minVerticalPadding: 20,
-                          leading: Image.asset(item.image),
+                          leading: commonCacheImageWidget(host + item.image, 80, fit: BoxFit.cover),
                           title: Text(item.productName),
                           subtitle: Text('${item.productPrice} DT'),
                           trailing: Row(

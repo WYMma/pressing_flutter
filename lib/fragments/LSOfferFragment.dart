@@ -9,6 +9,7 @@ import 'package:laundry/screens/LSCoupon.dart';
 import 'package:laundry/screens/LSNotificationsScreen.dart';
 import 'package:laundry/services/api/LSSalesAPI.dart';
 import 'package:laundry/services/localDB/LSCartProvider.dart';
+import 'package:laundry/utils/LSContstants.dart';
 import 'package:nb_utils/nb_utils.dart';
 import 'package:provider/provider.dart';
 
@@ -121,7 +122,7 @@ class LLSOfferFragmentState extends State<LSOfferFragment> {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                commonCacheImageWidget('http://127.0.0.1:8000'+sale.image, 80, fit: BoxFit.cover).center(),
+                commonCacheImageWidget(host+sale.image, 80, fit: BoxFit.cover).center(),
                 16.width,
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,

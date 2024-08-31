@@ -7,4 +7,6 @@ const isSignedInPref = 'isSignedInPref';
 const isNotificationsEnabledPref = 'isNotificationsEnabledPref';
 const appName = "Pressing Neffati";
 String user = '1';
+String host = "http://127.0.0.1:8000";
+
 

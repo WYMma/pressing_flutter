@@ -1,6 +1,7 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:laundry/model/LSPressingModel.dart';
 import 'package:laundry/services/api/LSItemAPI.dart';
 import 'package:laundry/services/api/LSSalesAPI.dart';
 import 'package:laundry/services/api/LSServicesAPI.dart';
@@ -16,7 +17,7 @@ import 'package:laundry/utils/LSColors.dart';
 import 'package:nb_utils/nb_utils.dart';
 import 'package:provider/provider.dart';
 import '../components/LSSOfferPackageComponent.dart';
-import '../components/LSServiceNearByComponent.dart';
+import '../components/LSPressingComponent.dart';
 import '../components/LSTopServiceComponent.dart';
 import '../screens/LSNotificationsScreen.dart';
 import '../main.dart';
@@ -156,6 +157,7 @@ class LSHomeFragmentState extends State<LSHomeFragment> {
       await Provider.of<LSServicesAPI>(context, listen: false).getAllServices();
       await Provider.of<LSSalesAPI>(context, listen: false).getAllSales();
       await Provider.of<LSItemAPI>(context, listen: false).getAllItems();
+      await LSPressingModel.fetchPressings();
     } on Exception catch (e) {
       print(e);
     } finally {
@@ -259,7 +261,7 @@ class LSHomeFragmentState extends State<LSHomeFragment> {
                   Text('Nos Pressings', style: boldTextStyle(size: 18)).expand(),
                 ],
               ).paddingOnly(left: 16, top: 16, right: 16, bottom: 8),
-              LSServiceNearByComponent(),
+              LSPressingComponent(),
               Row(
                 children: [
                   Text('Offres et forfaits spéciaux', style: boldTextStyle(size: 18)).expand(),

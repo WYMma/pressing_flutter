@@ -9,7 +9,7 @@ class LSDBHelper {
       path,
       onCreate: (database, version) async {
         await database.execute(
-          "CREATE TABLE cart(id INTEGER PRIMARY KEY AUTOINCREMENT, productId TEXT, productName TEXT, initialPrice REAL, productPrice REAL, quantity INTEGER, unitTag TEXT, image TEXT)",
+          "CREATE TABLE cart(id INTEGER PRIMARY KEY AUTOINCREMENT, productId TEXT, serviceID TEXT, productName TEXT, initialPrice REAL, productPrice REAL, quantity INTEGER, categorieID TEXT, image TEXT)",
         );
       },
       version: 1,

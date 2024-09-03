@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:laundry/components/LSNavBar.dart';
 import 'package:laundry/main.dart';
 import 'package:laundry/model/LSOrder.dart';
+import 'package:laundry/model/LSServicesModel.dart';
 import 'package:laundry/screens/LSOrderStatusScreen.dart';
 import 'package:laundry/utils/LSColors.dart';
 import 'package:laundry/utils/LSImages.dart';
@@ -56,9 +57,7 @@ class LSOrderDetailScreenState extends State<LSOrderDetailScreen> {
                   Text('Commande No - ${widget.data!.id.validate()}', style: boldTextStyle()),
                   4.height,
                   Text(
-                    DateFormat('dd/MM/yyyy').format(widget.data!.confirmationTimestamp) +
-                        ' à ' +
-                        DateFormat('kk:mm a').format(widget.data!.confirmationTimestamp),
+                    '${DateFormat('dd/MM/yyyy').format(widget.data!.confirmationTimestamp)} à ${DateFormat('kk:mm a').format(widget.data!.confirmationTimestamp)}',
                     style: secondaryTextStyle(),
                   ),
                   Divider(),
@@ -88,10 +87,11 @@ class LSOrderDetailScreenState extends State<LSOrderDetailScreen> {
                                 children: [
                                   Text('${item.quantity.value}x ', style: primaryTextStyle()),
                                   Text(item.productName, style: primaryTextStyle()),
-                                  Text(' (${item.unitTag})', style: secondaryTextStyle()),
+                                  Text(' (${item.categorieID})', style: secondaryTextStyle()),
+                                  Text(' (${LSServicesModel.services.firstWhere((element) => element.serviceID == int.parse(item.serviceID)).name})', style: secondaryTextStyle()),
                                 ],
                               ),
-                              Text((item.productPrice * item.quantity.value).toString() + ' DT', style: primaryTextStyle()),
+                              Text('${item.productPrice * item.quantity.value} DT', style: primaryTextStyle()),
                             ],
                           ),
                         );
@@ -115,7 +115,7 @@ class LSOrderDetailScreenState extends State<LSOrderDetailScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text('Total', style: boldTextStyle()),
-                      Text(widget.data!.totalPrice.toString() + ' DT', style: boldTextStyle()),
+                      Text('${widget.data!.totalPrice} DT', style: boldTextStyle()),
                     ],
                   ),
                   8.height,

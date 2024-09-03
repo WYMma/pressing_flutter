@@ -53,4 +53,8 @@ class LSSalesModel {
   }
 
   static List<LSSalesModel> sales = [];
+
+  bool isOfferExpired() {
+    return DateTime.now().isAfter(endDate);
+  }
 }

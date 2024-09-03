@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:laundry/model/LSSalesModel.dart';
-import 'package:laundry/screens/LSCoupon.dart';
+import 'package:laundry/model/LSServicesModel.dart';
+import 'package:laundry/screens/LSProductListScreen.dart';
 import 'package:laundry/utils/LSContstants.dart';
 import 'package:nb_utils/nb_utils.dart';
 import 'package:provider/provider.dart';
@@ -31,10 +32,6 @@ class LSSOfferPackageComponentState extends State<LSSOfferPackageComponent> {
     }
   }
 
-  bool isOfferExpired(DateTime endDate) {
-    return DateTime.now().isAfter(endDate);
-  }
-
   @override
   void setState(fn) {
     if (mounted) super.setState(fn);
@@ -47,7 +44,7 @@ class LSSOfferPackageComponentState extends State<LSSOfferPackageComponent> {
       itemCount: LSSalesModel.sales.take(4).length,
       itemBuilder: (BuildContext context, int index) {
         final sale = LSSalesModel.sales[index];
-        bool expired = isOfferExpired(sale.endDate);
+        bool expired = sale.isOfferExpired();
 
         return Container(
           width: 280,
@@ -65,7 +62,7 @@ class LSSOfferPackageComponentState extends State<LSSOfferPackageComponent> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   Text(sale.name.validate(), style: primaryTextStyle()),
-                  Text('Promotion: ${sale.discount.floor()}%', style: primaryTextStyle(color: LSColorPrimary, size: 18)),
+                  Text('Promotion: ${(sale.discount * 100).floor()}%', style: primaryTextStyle(color: LSColorPrimary, size: 18)),
                   8.height,
                   AppButton(
                     padding: EdgeInsets.only(top: 8, bottom: 8, right: 16, left: 16),
@@ -73,13 +70,13 @@ class LSSOfferPackageComponentState extends State<LSSOfferPackageComponent> {
                     text: expired ? "Expiré" : "Voir l'offre",
                     onTap: () {
                       if (!expired) {
-                        LSCoupon().launch(context);
+                        LSProductListScreen(LSServicesModel.services.firstWhere((element) => element.serviceID == sale.serviceID)).launch(context);
                       }
                     },
                     color: expired ? Colors.grey : LSColorPrimary,
                   )
                 ],
-              )
+              ).expand(),
             ],
           ),
         ).onTap(() {

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:laundry/model/LSServicesModel.dart';
 import 'package:laundry/screens/LSProductListScreen.dart';
 import 'package:laundry/services/api/LSServicesAPI.dart';
+import 'package:laundry/utils/LSContstants.dart';
 import 'package:nb_utils/nb_utils.dart';
 import 'package:provider/provider.dart';
 
@@ -54,13 +55,13 @@ class LSTopServiceComponentState extends State<LSTopServiceComponent> {
               alignment: Alignment.center,
               margin: EdgeInsets.all(8),
               decoration: boxDecorationRoundedWithShadow(25, backgroundColor: context.cardColor),
-              child: commonCacheImageWidget('http://127.0.0.1:8000' + data.image, 50, width: 50, fit: BoxFit.cover),
+              child: commonCacheImageWidget(host + data.image, 50, width: 50, fit: BoxFit.cover),
             ),
             8.height,
             Text(data.name.validate(), style: primaryTextStyle()),
           ],
         ).onTap(() {
-          LSProductListScreen().launch(context);
+          LSProductListScreen(data).launch(context);
         });
       },
     );

@@ -5,8 +5,9 @@ import 'package:laundry/fragments/LSCartFragment.dart';
 import 'package:laundry/main.dart';
 import 'package:laundry/model/LSNotificationsModel.dart';
 import 'package:laundry/model/LSSalesModel.dart';
-import 'package:laundry/screens/LSCoupon.dart';
+import 'package:laundry/model/LSServicesModel.dart';
 import 'package:laundry/screens/LSNotificationsScreen.dart';
+import 'package:laundry/screens/LSProductListScreen.dart';
 import 'package:laundry/services/api/LSSalesAPI.dart';
 import 'package:laundry/services/localDB/LSCartProvider.dart';
 import 'package:laundry/utils/LSContstants.dart';
@@ -53,10 +54,6 @@ class LLSOfferFragmentState extends State<LSOfferFragment> {
   @override
   void setState(fn) {
     if (mounted) super.setState(fn);
-  }
-
-  bool isOfferExpired(DateTime endDate) {
-    return DateTime.now().isAfter(endDate);
   }
 
   @override
@@ -113,10 +110,10 @@ class LLSOfferFragmentState extends State<LSOfferFragment> {
         padding: EdgeInsets.all(8),
         itemBuilder: (_, i) {
           final sale = sales[i];
-          bool expired = isOfferExpired(sale.endDate);
+          bool expired = sale.isOfferExpired();
 
           return Container(
-            margin: EdgeInsets.all(16),
+            margin: EdgeInsets.only(top: 16, left: 16, right: 16),
             padding: EdgeInsets.only(top: 24, bottom: 24, left: 12, right: 12),
             decoration: boxDecorationRoundedWithShadow(8, backgroundColor: context.cardColor),
             child: Row(
@@ -129,14 +126,14 @@ class LLSOfferFragmentState extends State<LSOfferFragment> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     Text(sale.name.validate(), style: primaryTextStyle()),
-                    Text('Obtenez ${sale.discount.floor()}% de réduction', style: primaryTextStyle(color: LSColorPrimary, size: 16)),
+                    Text('Obtenez ${(sale.discount * 100).floor()}% de réduction', style: primaryTextStyle(color: LSColorPrimary, size: 16)),
                     AppButton(
                       padding: EdgeInsets.only(top: 8, bottom: 8, right: 24, left: 24),
                       textColor: white,
                       text: expired ? "Expiré" : "Voir l'offre",
                       onTap: () {
                         if (!expired) {
-                          LSCoupon().launch(context);
+                          LSProductListScreen(LSServicesModel.services.firstWhere((element) => element.serviceID == sale.serviceID)).launch(context);
                         }
                       },
                       color: expired ? Colors.grey : LSColorPrimary,

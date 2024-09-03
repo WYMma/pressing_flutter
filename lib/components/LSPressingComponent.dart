@@ -1,18 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:laundry/model/LSServiceModel.dart';
+import 'package:laundry/model/LSPressingModel.dart';
+import 'package:laundry/utils/LSContstants.dart';
 import 'package:nb_utils/nb_utils.dart';
 
-import '../screens/ServiceDetail/LSServiceDetailScreen.dart';
+import '../screens/LSServiceDetailScreen.dart';
 import '../utils/LSWidgets.dart';
 
-class LSServiceNearByComponent extends StatefulWidget {
+class LSPressingComponent extends StatefulWidget {
   static String tag = '/LSServiceNearByComponent';
 
   @override
-  LSServiceNearByComponentState createState() => LSServiceNearByComponentState();
+  LSPressingComponentState createState() => LSPressingComponentState();
 }
 
-class LSServiceNearByComponentState extends State<LSServiceNearByComponent> {
+class LSPressingComponentState extends State<LSPressingComponent> {
   @override
   void initState() {
     super.initState();
@@ -31,9 +32,9 @@ class LSServiceNearByComponentState extends State<LSServiceNearByComponent> {
   @override
   Widget build(BuildContext context) {
     return HorizontalList(
-      itemCount: getNearByServiceList().length,
+      itemCount: LSPressingModel.pressings.length,
       itemBuilder: (BuildContext context, int index) {
-        LSServiceModel data = getNearByServiceList()[index];
+        LSPressingModel data = LSPressingModel.pressings[index];
 
         return Container(
           width: context.width() * 0.62,
@@ -42,25 +43,25 @@ class LSServiceNearByComponentState extends State<LSServiceNearByComponent> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              commonCacheImageWidget(data.img.validate(), 120, width: context.width(), fit: BoxFit.cover).center().cornerRadiusWithClipRRectOnly(topLeft: 8, topRight: 8),
+              commonCacheImageWidget(host+data.image, 120, width: context.width(), fit: BoxFit.cover).center().cornerRadiusWithClipRRectOnly(topLeft: 8, topRight: 8),
               8.height,
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
                     children: [
-                      Text(data.title.validate(), style: primaryTextStyle()).expand(),
+                      Text(data.name, style: primaryTextStyle()).expand(),
                     ],
                   ),
                 ],
               ).paddingOnly(left: 8, right: 8),
               4.height,
-              Text(data.location.validate(), style: secondaryTextStyle()).paddingOnly(left: 8, right: 8),
+              Text(data.writtenAddress, style: secondaryTextStyle()).paddingOnly(left: 8, right: 8),
               8.height,
             ],
           ),
         ).onTap(() {
-          LSServiceDetailScreen().launch(context);
+          LSServiceDetailScreen(data).launch(context);
         });
       },
     );

@@ -7,6 +7,7 @@ import 'package:laundry/fragmentsCourier/LSCourierHomeFragment.dart';
 import 'package:laundry/screens/LSNoInternet.dart';
 import 'package:laundry/screens/LSSignInScreen.dart';
 import 'package:laundry/services/api/LSItemAPI.dart';
+import 'package:laundry/services/api/LSLignePanierAPI.dart';
 import 'package:laundry/services/api/LSSalesAPI.dart';
 import 'package:laundry/services/api/LSServicesAPI.dart';
 import 'package:laundry/services/api/LSAddressAPI.dart';
@@ -57,6 +58,7 @@ void main() async {
         ChangeNotifierProvider(create: (_) => LSServicesAPI()),
         ChangeNotifierProvider(create: (_) => LSSalesAPI()),
         ChangeNotifierProvider(create: (_) => LSItemAPI()),
+        ChangeNotifierProvider(create: (_) => LSLignePanierAPI()),
       ],
       child: MyApp(),
     ),

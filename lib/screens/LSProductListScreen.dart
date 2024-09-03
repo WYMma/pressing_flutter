@@ -2,6 +2,8 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:laundry/main.dart';
 import 'package:laundry/model/LSNotificationsModel.dart';
+import 'package:laundry/model/LSSalesModel.dart';
+import 'package:laundry/model/LSServicesModel.dart';
 import 'package:laundry/services/api/LSItemAPI.dart';
 import 'package:laundry/utils/LSColors.dart';
 import 'package:laundry/utils/LSContstants.dart';
@@ -17,11 +19,23 @@ import 'package:laundry/model/LSCartModel.dart';
 import 'LSNotificationsScreen.dart';
 
 class LSProductListScreen extends StatefulWidget {
+  static String tag = '/LSProductListScreen';
+  final LSServicesModel? data;
+  LSProductListScreen(this.data);
   @override
   _LSProductListScreenState createState() => _LSProductListScreenState();
 }
 
 class _LSProductListScreenState extends State<LSProductListScreen> {
+
+  double checkForSale(int serviceID) {
+    for (var sale in LSSalesModel.sales) {
+      if (sale.serviceID == serviceID && !sale.isOfferExpired()) {
+        return sale.discount;
+      }
+    }
+    return 0.0;
+  }
 
   final List<String> categories = [
     'Tout',
@@ -60,7 +74,7 @@ class _LSProductListScreenState extends State<LSProductListScreen> {
 
     return Scaffold(
       appBar: appBarWidget(
-        'Laveries à proximité',
+        widget.data!.name,
         center: true,
         showBack: false,
         color: context.cardColor,
@@ -154,13 +168,32 @@ class _LSProductListScreenState extends State<LSProductListScreen> {
                     child: ListTile(
                       leading: commonCacheImageWidget(host + product.photo, 80, fit: BoxFit.cover),
                       title: Text(product.name),
-                      subtitle: Text('${product.price} DT'),
+                      subtitle: Row(
+                        children: [
+                          if (checkForSale(widget.data!.serviceID) < 1.0) // If there's a discount
+                            Text(
+                              '${(product.price + widget.data!.price).toStringAsFixed(2)} DT',
+                              style: TextStyle(
+                                decoration: TextDecoration.lineThrough, // Crossed out style
+                                color: Colors.grey, // Red color for the original price
+                              ),
+                            ),
+                          SizedBox(width: 5), // Space between the prices
+                          Text(
+                            '${((product.price + widget.data!.price) * (1-checkForSale(widget.data!.serviceID))).toStringAsFixed(2)} DT',
+                            style: TextStyle(
+                              color: Colors.green, // Green color for the discounted price
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
                       trailing: AppButton(
                         elevation: 0,
                         width: 40,
                         onTap: () {
                           cart.addCounter();
-                          cart.addTotalPrice(double.parse(product.price.toString()));
+                          cart.addTotalPrice((product.price + widget.data!.price)*(1-checkForSale(widget.data!.serviceID)));
                           Fluttertoast.showToast(
                             msg: '${product.name} ajouté avec succès au panier',
                             toastLength: Toast.LENGTH_SHORT,
@@ -172,11 +205,12 @@ class _LSProductListScreenState extends State<LSProductListScreen> {
                             LSCartModel(
                               id: int.parse(product.itemID), // Use productId as id
                               productId: product.itemID,
+                              serviceID: widget.data!.serviceID.toString(),
                               productName: product.name,
                               initialPrice: product.price,
-                              productPrice: product.price,
+                              productPrice: (product.price + widget.data!.price)*(1-checkForSale(widget.data!.serviceID)),
                               quantity: ValueNotifier(1),
-                              unitTag: product.categorieID,
+                              categorieID: product.categorieID,
                               image: product.photo,
                             ),
                           );

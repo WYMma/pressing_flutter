@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:laundry/components/LSMissionComponents.dart';
 import 'package:laundry/components/LSNavBarCourier.dart';
 import 'package:nb_utils/nb_utils.dart';
 
-import '../components/LSBookingComponents.dart';
 import '../main.dart';
 import '../utils/LSColors.dart';
 
@@ -66,8 +66,8 @@ class LSMissionFragmentState extends State<LSMissionFragment> {
         ),
         body: TabBarView(
           children: [
-            LSBookingComponents('En cours'),
-            LSBookingComponents('Terminé'),
+            LSMissionComponents('En cours'),
+            LSMissionComponents('Ramassée'),
           ],
         ),
         bottomNavigationBar: LSNavBarCourier(selectedIndex: _selectedIndex),

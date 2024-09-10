@@ -15,7 +15,7 @@ class AppThemeData {
     primaryColorDark: LSColorPrimary,
     hoverColor: Colors.white54,
     dividerColor: viewLineColor,
-    fontFamily: GoogleFonts.openSans().fontFamily,
+    fontFamily: GoogleFonts.arimo().fontFamily,
     appBarTheme: AppBarTheme(
       color: whiteColor,
       iconTheme: IconThemeData(color: textPrimaryColor),

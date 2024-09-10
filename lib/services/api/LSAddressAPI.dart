@@ -37,6 +37,32 @@ class LSAddressAPI extends ChangeNotifier {
     }
   }
 
+  Future<LSAddressModel?> getAddressById(String? addressID) async {
+    try {
+      String? token = await storage.read(key: 'token');
+      Dio.Response response = await dio().get(
+        '/addresses/single/$addressID',
+        options: Dio.Options(
+          headers: {'Authorization': 'Bearer $token'},
+        ),
+      );
+
+      // Assuming response contains a single address as a Map
+      if (response.data is Map<String, dynamic>) {
+        // Convert JSON response to LSAddressModel instance
+        LSAddressModel address = LSAddressModel.fromJson(response.data);
+        print('Fetched address: $address');
+        return address;
+      } else {
+        print('Unexpected response data format');
+        return null;
+      }
+    } catch (e) {
+      print('Error fetching address: $e');
+      return null;
+    }
+  }
+
   Future<void> addAddress({Map? addresse}) async{
     try {
       String? token = await storage.read(key: 'token');

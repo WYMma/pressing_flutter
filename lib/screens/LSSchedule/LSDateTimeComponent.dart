@@ -46,6 +46,10 @@ class LSDateTimeComponentState extends State<LSDateTimeComponent> with Automatic
         deliveryDateTime = pickUpDateTime.add(Duration(days: 3));
       }
       deliveryDateTimeCont.text = deliveryDateTime.toString();
+      if (LSOrder.exists()) {
+        LSOrder order = LSOrder();
+        order.setDeliveryDate(deliveryDateTime);
+      }
     });
   }
 
@@ -187,10 +191,6 @@ class LSDateTimeComponentState extends State<LSDateTimeComponent> with Automatic
                           deliveryDateTime = DateTime.parse(val);
                           deliveryDateTimeCont.text = deliveryDateTime.toString();
                         });
-                        if (LSOrder.exists()) {
-                          LSOrder order = LSOrder();
-                          order.setDeliveryDate(deliveryDateTime);
-                        }
                       },
                       onSaved: (val) {
                         // Add save logic if needed

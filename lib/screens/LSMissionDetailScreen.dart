@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:laundry/components/LSNavBar.dart';
+import 'package:laundry/components/LSNavBarCourier.dart';
 import 'package:laundry/main.dart';
-import 'package:laundry/model/LSOrder.dart';
+import 'package:laundry/model/LSMissionModel.dart';
 import 'package:laundry/model/LSServicesModel.dart';
-import 'package:laundry/screens/LSOrderStatusScreen.dart';
+import 'package:laundry/screens/LSMissionStatusScreen.dart';
 import 'package:laundry/services/api/LSItemAPI.dart';
 import 'package:laundry/utils/LSColors.dart';
 import 'package:laundry/utils/LSImages.dart';
@@ -11,18 +11,18 @@ import 'package:laundry/utils/LSWidgets.dart';
 import 'package:nb_utils/nb_utils.dart';
 import 'package:intl/intl.dart';
 
-class LSOrderDetailScreen extends StatefulWidget {
+class LSMissionDetailScreen extends StatefulWidget {
   static String tag = '/LSOrderDetailScreen';
-  final LSOrder? data;
+  final LSMissionModel? data;
 
-  LSOrderDetailScreen(this.data);
+  LSMissionDetailScreen(this.data);
 
   @override
-  LSOrderDetailScreenState createState() => LSOrderDetailScreenState();
+  LSMissionDetailScreenState createState() => LSMissionDetailScreenState();
 }
 
-class LSOrderDetailScreenState extends State<LSOrderDetailScreen> {
-  int _selectedIndex = 3;
+class LSMissionDetailScreenState extends State<LSMissionDetailScreen> {
+  int selectedIndex = 3;
 
   @override
   void initState() {
@@ -90,10 +90,10 @@ class LSOrderDetailScreenState extends State<LSOrderDetailScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Commande No - ${widget.data!.id.validate()}', style: boldTextStyle()),
+                  Text('Commande No - ${widget.data!.commandeID.validate()}', style: boldTextStyle()),
                   4.height,
                   Text(
-                    '${DateFormat('dd/MM/yyyy').format(widget.data!.confirmationTimestamp)} à ${DateFormat('kk:mm a').format(widget.data!.confirmationTimestamp)}',
+                    '${DateFormat('dd/MM/yyyy').format(widget.data!.order!.confirmationTimestamp)} à ${DateFormat('kk:mm a').format(widget.data!.order!.confirmationTimestamp)}',
                     style: secondaryTextStyle(),
                   ),
                   Divider(),
@@ -101,7 +101,7 @@ class LSOrderDetailScreenState extends State<LSOrderDetailScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text('Methode Paiement', style: boldTextStyle(size: 14)),
-                      Text(widget.data!.paymentMethod.toString(), style: secondaryTextStyle())
+                      Text(widget.data!.order!.paymentMethod.toString(), style: secondaryTextStyle())
                     ],
                   ),
                   Divider(),
@@ -111,9 +111,9 @@ class LSOrderDetailScreenState extends State<LSOrderDetailScreen> {
                     height: 250,
                     child: ListView.builder(
                       padding: EdgeInsets.symmetric(vertical: 5, horizontal: 10), // Adjust padding if necessary
-                      itemCount: widget.data!.cartItems.length,
+                      itemCount: widget.data!.order!.cartItems.length,
                       itemBuilder: (context, index) {
-                        final item = widget.data!.cartItems[index];
+                        final item = widget.data!.order!.cartItems[index];
                         return Padding(
                           padding: EdgeInsets.symmetric(vertical: 5), // Adjust padding if necessary
                           child: Column(
@@ -143,8 +143,8 @@ class LSOrderDetailScreenState extends State<LSOrderDetailScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(widget.data!.deliveryType, style: boldTextStyle()),
-                      if (widget.data!.deliveryType == 'Livraison Express')
+                      Text(widget.data!.order!.deliveryType, style: boldTextStyle()),
+                      if (widget.data!.order!.deliveryType == 'Livraison Express')
                         Text('5.0 DT', style: primaryTextStyle())
                       else
                         Text('0.0 DT', style: primaryTextStyle())
@@ -156,7 +156,7 @@ class LSOrderDetailScreenState extends State<LSOrderDetailScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text('Total', style: boldTextStyle()),
-                      Text('${widget.data!.totalPrice} DT', style: boldTextStyle()),
+                      Text('${widget.data!.order!.totalPrice} DT', style: boldTextStyle()),
                     ],
                   ),
                   8.height,
@@ -186,7 +186,7 @@ class LSOrderDetailScreenState extends State<LSOrderDetailScreen> {
                       Text(statusText(widget.data?.status as String), style: boldTextStyle()),
                       4.height,
                       Text('Voir les détails', style: boldTextStyle(color: LSColorPrimary)).onTap(() {
-                        LSOrderStatusScreen(widget.data).launch(context);
+                        LSMissionStatusScreen(widget.data).launch(context);
                       }),
                       4.height,
                     ],
@@ -197,7 +197,7 @@ class LSOrderDetailScreenState extends State<LSOrderDetailScreen> {
           ],
         ),
       ),
-      bottomNavigationBar: LSNavBar(selectedIndex: _selectedIndex),
+      bottomNavigationBar: LSNavBarCourier(selectedIndex: 3),
     );
   }
 }

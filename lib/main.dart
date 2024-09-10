@@ -7,7 +7,9 @@ import 'package:laundry/fragmentsCourier/LSCourierHomeFragment.dart';
 import 'package:laundry/screens/LSNoInternet.dart';
 import 'package:laundry/screens/LSSignInScreen.dart';
 import 'package:laundry/services/api/LSItemAPI.dart';
-import 'package:laundry/services/api/LSLignePanierAPI.dart';
+import 'package:laundry/services/api/LSCommandeAPI.dart';
+import 'package:laundry/services/api/LSMissionAPI.dart';
+import 'package:laundry/services/api/LSPressingAPI.dart';
 import 'package:laundry/services/api/LSSalesAPI.dart';
 import 'package:laundry/services/api/LSServicesAPI.dart';
 import 'package:laundry/services/api/LSAddressAPI.dart';
@@ -19,7 +21,7 @@ import 'package:laundry/screens/LSWalkThroughScreen.dart';
 import 'package:laundry/services/LSAuthService.dart';
 import 'package:laundry/store/AppStore.dart';
 import 'package:laundry/utils/AppTheme.dart';
-import 'package:laundry/utils/LSContstants.dart';
+import 'package:laundry/utils/LSConstants.dart';
 import 'package:laundry/utils/LSWidgets.dart';
 import 'package:nb_utils/nb_utils.dart';
 import 'package:provider/provider.dart';
@@ -58,7 +60,9 @@ void main() async {
         ChangeNotifierProvider(create: (_) => LSServicesAPI()),
         ChangeNotifierProvider(create: (_) => LSSalesAPI()),
         ChangeNotifierProvider(create: (_) => LSItemAPI()),
-        ChangeNotifierProvider(create: (_) => LSLignePanierAPI()),
+        ChangeNotifierProvider(create: (_) => LSCommandeAPI()),
+        ChangeNotifierProvider(create: (_) => LSPressingAPI()),
+        ChangeNotifierProvider(create: (_) => LSMissionAPI()),
       ],
       child: MyApp(),
     ),

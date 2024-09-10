@@ -74,15 +74,6 @@ class LSCompleteComponentState extends State<LSCompleteComponent> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('Commande No -', style: boldTextStyle()),
-                      Text(widget.data!.id.toString(), style: primaryTextStyle()),
-                    ],
-                  ).paddingOnly(left: 16, right: 16, top: 8),
-                  4.height,
-                  Divider(),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
                       Text('Montant final', style: boldTextStyle()),
                       Text(widget.data!.totalPrice.toString() + ' DT', style: primaryTextStyle()),
                     ],

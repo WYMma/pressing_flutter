@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:laundry/components/LSNavBarCourier.dart';
 import 'package:laundry/main.dart';
 import 'package:laundry/screens/LSNotificationsScreen.dart';
+import 'package:laundry/utils/LSConstants.dart';
 import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -103,7 +104,7 @@ class LSProfileFragmentState extends State<LSProfileFragment> {
                         radius: 60,
                         backgroundColor: Colors.red,
                         backgroundImage: CachedNetworkImageProvider(
-                          authService.user!.avatar,
+                          host + authService.user!.avatar,
                         ),
                       ),
                       const SizedBox(height: 10),

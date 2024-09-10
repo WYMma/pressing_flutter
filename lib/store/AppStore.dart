@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:laundry/main.dart';
 import 'package:laundry/utils/LSColors.dart';
-import 'package:laundry/utils/LSContstants.dart';
+import 'package:laundry/utils/LSConstants.dart';
 import 'package:mobx/mobx.dart';
 import 'package:nb_utils/nb_utils.dart';
 

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:laundry/model/LSServicesModel.dart';
 import 'package:laundry/screens/LSProductListScreen.dart';
 import 'package:laundry/services/api/LSServicesAPI.dart';
-import 'package:laundry/utils/LSContstants.dart';
+import 'package:laundry/utils/LSConstants.dart';
 import 'package:nb_utils/nb_utils.dart';
 import 'package:provider/provider.dart';
 

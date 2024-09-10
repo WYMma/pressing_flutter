@@ -1,6 +1,7 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:laundry/components/LSNavBar.dart';
+import 'package:laundry/services/api/LSCommandeAPI.dart';
 import 'package:laundry/services/localDB/LSCartProvider.dart';
 import 'package:laundry/fragments/LSCartFragment.dart';
 import 'package:laundry/model/LSNotificationsModel.dart';
@@ -33,6 +34,7 @@ class LSBookingFragmentState extends State<LSBookingFragment> {
   init() async {
     await 2.microseconds.delay;
     setStatusBarColor(context.cardColor);
+    await Provider.of<LSCommandeAPI>(context, listen: false).getAllCommandes();
   }
 
   @override

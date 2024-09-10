@@ -25,7 +25,6 @@ class LSAuthService extends ChangeNotifier {
   Future<void> login({Map? creds}) async{
     try {
       Dio.Response response = await dio().post('/sanctum/token', data: creds);
-      print(response.data.toString());
       _token = response.data.toString();
       await tryToken(token: _token);
       notifyListeners();
@@ -92,7 +91,7 @@ class LSAuthService extends ChangeNotifier {
       );
       return response.statusCode;
     } catch (e) {
-      print('Failed to update password: $e');
+
       return null; // Return null or an error code to handle in your Flutter app
     }
   }
@@ -142,12 +141,8 @@ class LSAuthService extends ChangeNotifier {
         String role = response.data['role'];
         if (role == 'Client') {
           await retrieveClient(userID: userID, token: token);
-          print(_user);
-          print(_client);
         } else if (role == 'Transporteur') {
           await retrievePersonnels(userID: userID, token: token);
-          print(_user);
-          print(_transporteur);
         }
         _token = token;
         storeToken(token: token);
@@ -190,7 +185,6 @@ class LSAuthService extends ChangeNotifier {
     try {
       String? token = await storage.read(key: 'token');
       if (token == null) {
-        print('No token found, unable to retrieve API keys.');
         return;
       }
 
@@ -208,9 +202,6 @@ class LSAuthService extends ChangeNotifier {
         APIKey apiKey = APIKey.fromJson(apiKeyJson);
         APIKey.addApiKey(apiKey);
       }
-
-      print('API keys successfully retrieved and stored.');
-      print(APIKey.apiKeyList);
       notifyListeners();
     } catch (e) {
       print('Failed to retrieve API keys: $e');

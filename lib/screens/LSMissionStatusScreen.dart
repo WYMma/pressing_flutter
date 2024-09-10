@@ -1,34 +1,36 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:laundry/components/LSNavBar.dart';
-import 'package:laundry/fragments/LSBookingFragment.dart';
+import 'package:laundry/components/LSNavBarCourier.dart';
+import 'package:laundry/fragmentsCourier/LSMissionFragment.dart';
 import 'package:laundry/main.dart';
-import 'package:laundry/model/LSOrder.dart';
+import 'package:laundry/model/LSMissionModel.dart';
+import 'package:laundry/services/LSAuthService.dart';
 import 'package:laundry/services/api/LSCommandeAPI.dart';
+import 'package:laundry/services/api/LSMissionAPI.dart';
 import 'package:laundry/utils/LSColors.dart';
 import 'package:laundry/utils/LSImages.dart';
 import 'package:laundry/utils/LSWidgets.dart';
 import 'package:nb_utils/nb_utils.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:url_launcher/url_launcher_string.dart'; // Add this import for launching URLs
+import 'package:url_launcher/url_launcher_string.dart';
 
-class LSOrderStatusScreen extends StatefulWidget {
+class LSMissionStatusScreen extends StatefulWidget {
   static String tag = '/LSOrderStatusScreen';
-  final LSOrder? data;
+  final LSMissionModel? data;
 
-  LSOrderStatusScreen(this.data);
+  LSMissionStatusScreen(this.data);
 
   final storage = FlutterSecureStorage();
 
   @override
-  LSOrderStatusScreenState createState() => LSOrderStatusScreenState();
+  LSMissionStatusScreenState createState() => LSMissionStatusScreenState();
 }
 
-class LSOrderStatusScreenState extends State<LSOrderStatusScreen> {
+class LSMissionStatusScreenState extends State<LSMissionStatusScreen> {
 
 
-  int _selectedIndex = 3;
+  int selectedIndex = 3;
 
   @override
   void initState() {
@@ -58,10 +60,71 @@ class LSOrderStatusScreenState extends State<LSOrderStatusScreen> {
               icon: Icon(Icons.check_circle, color: LSColorPrimary), // Add your trailing icon
               label: Text('Oui', style: TextStyle(color: LSColorPrimary, fontWeight: FontWeight.bold)),
               onPressed: () async {
-                await Provider.of<LSCommandeAPI>(context, listen: false).deleteCommande(widget.data!.id);
+                await Provider.of<LSCommandeAPI>(context, listen: false).deleteCommande(widget.data!.commandeID);
+                await Provider.of<LSMissionAPI>(context, listen: false).updateMission(widget.data!.missionID, context);
                 Navigator.of(context).pop(); // Close the dialog
-                LSBookingFragment().launch(context); // Go back to the previous screen
+                LSMissionFragment().launch(context); // Go back to the previous screen
                 toast('Commande annulée avec succès');
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+  void _markPickedUp() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Confirmation'),
+          content: Text('Êtes-vous sûr de vouloir marquer la commande comme ramassée?'),
+          actions: <Widget>[
+            TextButton.icon(
+              icon: Icon(Icons.cancel, color: Colors.red), // Add your trailing icon
+              label: Text('Non', style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+            ),
+            TextButton.icon(
+              icon: Icon(Icons.check_circle, color: LSColorPrimary), // Add your trailing icon
+              label: Text('Oui', style: TextStyle(color: LSColorPrimary, fontWeight: FontWeight.bold)),
+              onPressed: () async {
+                await Provider.of<LSCommandeAPI>(context, listen: false).pickup(widget.data!.commandeID);
+                Navigator.of(context).pop();
+                LSMissionFragment().launch(context);
+                toast('Commande marquée comme ramassée');
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+  void _markDelivered() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Confirmation'),
+          content: Text('Êtes-vous sûr de vouloir marquer la commande comme livrée?'),
+          actions: <Widget>[
+            TextButton.icon(
+              icon: Icon(Icons.cancel, color: Colors.red), // Add your trailing icon
+              label: Text('Non', style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+            ),
+            TextButton.icon(
+              icon: Icon(Icons.check_circle, color: LSColorPrimary), // Add your trailing icon
+              label: Text('Oui', style: TextStyle(color: LSColorPrimary, fontWeight: FontWeight.bold)),
+              onPressed: () async {
+                await Provider.of<LSCommandeAPI>(context, listen: false).deliver(widget.data!.commandeID);
+                Navigator.of(context).pop();
+                LSMissionFragment().launch(context);
+                toast('Commande marquée comme livrée');
               },
             ),
           ],
@@ -71,8 +134,8 @@ class LSOrderStatusScreenState extends State<LSOrderStatusScreen> {
   }
 
   bool _canCancelOrder() {
-    bool isNotPickedUp = !widget.data!.isPickedUp;
-    bool isWithin12Hours = DateTime.now().difference(widget.data!.confirmationTimestamp).inHours < 12;
+    bool isNotPickedUp = !widget.data!.order!.isPickedUp;
+    bool isWithin12Hours = DateTime.now().difference(widget.data!.order!.confirmationTimestamp).inHours < 12;
 
     return isNotPickedUp && isWithin12Hours;
   }
@@ -135,16 +198,16 @@ class LSOrderStatusScreenState extends State<LSOrderStatusScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text('Numéro de commande:', style: boldTextStyle()),
-                      Text('${widget.data!.totalPrice.toString()} DT', style: boldTextStyle()),
+                      Text('${widget.data!.order!.totalPrice.toString()} DT', style: boldTextStyle()),
                     ],
                   ),
                   4.height,
-                  Text(widget.data!.id.toString(), style: secondaryTextStyle(),),
+                  Text(widget.data!.order!.id.toString(), style: secondaryTextStyle(),),
                   Divider(),
                   Text('Statut de la commande', style: boldTextStyle()),
                   Divider(),
-                  if (widget.data!.isConfirmed) ...[
-                    statusView('Confirmé', 'La commande a été confirmée le \n${dateFormat.format(widget.data!.confirmationTimestamp)}', LSConfirm),
+                  if (widget.data!.order!.isConfirmed) ...[
+                    statusView('Confirmé', 'La commande a été confirmée le \n${dateFormat.format(widget.data!.order!.confirmationTimestamp)}', LSConfirm),
                     Container(
                       height: 30,
                       width: 2,
@@ -152,8 +215,8 @@ class LSOrderStatusScreenState extends State<LSOrderStatusScreen> {
                       margin: EdgeInsets.only(left: 10),
                     ),
                   ],
-                  if (widget.data!.isPickedUp) ...[
-                    statusView('Ramassé', 'La commande a été ramassée le \n${dateFormat.format(widget.data!.pickUpDate)}', LSPickup),
+                  if (widget.data!.order!.isPickedUp) ...[
+                    statusView('Ramassé', 'La commande a été ramassée le \n${dateFormat.format(widget.data!.order!.pickUpDate)}', LSPickup),
                     Container(
                       height: 30,
                       width: 2,
@@ -161,8 +224,8 @@ class LSOrderStatusScreenState extends State<LSOrderStatusScreen> {
                       margin: EdgeInsets.only(left: 10),
                     ),
                   ],
-                  if (widget.data!.isInProgress) ...[
-                    statusView('En cours', widget.data!.isShipped? 'La commande à été traité':'La commande est en cours de traitement', LSInProgress),
+                  if (widget.data!.order!.isInProgress) ...[
+                    statusView('En cours', widget.data!.order!.isShipped? 'La commande à été traité':'La commande est en cours de traitement', LSInProgress),
                     Container(
                       height: 30,
                       width: 2,
@@ -170,8 +233,8 @@ class LSOrderStatusScreenState extends State<LSOrderStatusScreen> {
                       margin: EdgeInsets.only(left: 10),
                     ),
                   ],
-                  if (widget.data!.isShipped) ...[
-                    statusView('Expédié', widget.data!.isDelivered? 'La commande à été expédié':'La commande est en cours de livraison', LSShipping),
+                  if (widget.data!.order!.isShipped) ...[
+                    statusView('Expédié', widget.data!.order!.isDelivered? 'La commande à été expédié':'La commande est en cours de livraison', LSShipping),
                     Container(
                       height: 30,
                       width: 2,
@@ -179,10 +242,10 @@ class LSOrderStatusScreenState extends State<LSOrderStatusScreen> {
                       margin: EdgeInsets.only(left: 10),
                     ),
                   ],
-                  if (widget.data!.isDelivered) ...[
+                  if (widget.data!.order!.isDelivered) ...[
                     Stack(
                       children: [
-                        statusView('Livrée', 'La commande a été livrée le ${dateFormat.format(widget.data!.deliveryDate)}', LSWalk3),
+                        statusView('Livrée', 'La commande a été livrée le ${dateFormat.format(widget.data!.order!.deliveryDate)}', LSWalk3),
                         Container(
                           height: 40,
                           width: context.width(),
@@ -199,6 +262,27 @@ class LSOrderStatusScreenState extends State<LSOrderStatusScreen> {
                         color: Colors.red,
                         textStyle: boldTextStyle(color: Colors.white),
                         onTap: _cancelOrder,
+                      ),
+                    ),
+                    16.height,
+                  ],
+                  if (Provider.of<LSAuthService>(context, listen: false).user?.role != 'Client' && !widget.data!.order!.isPickedUp) ...[
+                    Center( // This centers the button horizontally
+                      child: AppButton(
+                        text: 'Marquer comme ramassé',
+                        color: Colors.greenAccent,
+                        textStyle: boldTextStyle(color: Colors.white),
+                        onTap: _markPickedUp,
+                      ),
+                    ),
+                  ],
+                  if (Provider.of<LSAuthService>(context, listen: false).user?.role != 'Client' && widget.data!.order!.isPickedUp && !widget.data!.order!.isDelivered) ...[
+                    Center( // This centers the button horizontally
+                      child: AppButton(
+                        text: 'Marquer comme livré',
+                        color: Colors.greenAccent,
+                        textStyle: boldTextStyle(color: Colors.white),
+                        onTap: _markDelivered,
                       ),
                     ),
                   ],
@@ -225,7 +309,7 @@ class LSOrderStatusScreenState extends State<LSOrderStatusScreen> {
                       4.height,
                       Text('Adresse Ramassage & Livraison', style: boldTextStyle()), // Translated title
                       4.height,
-                      Text(widget.data!.address.toString(), style: secondaryTextStyle()),
+                      Text(widget.data!.order!.address.toString(), style: secondaryTextStyle()),
                     ],
                   ).expand()
                 ],
@@ -277,7 +361,7 @@ class LSOrderStatusScreenState extends State<LSOrderStatusScreen> {
           ],
         ),
       ),
-      bottomNavigationBar: LSNavBar(selectedIndex: _selectedIndex),
+      bottomNavigationBar: LSNavBarCourier(selectedIndex: 3),
     );
   }
 }

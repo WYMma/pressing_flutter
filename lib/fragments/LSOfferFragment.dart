@@ -10,7 +10,7 @@ import 'package:laundry/screens/LSNotificationsScreen.dart';
 import 'package:laundry/screens/LSProductListScreen.dart';
 import 'package:laundry/services/api/LSSalesAPI.dart';
 import 'package:laundry/services/localDB/LSCartProvider.dart';
-import 'package:laundry/utils/LSContstants.dart';
+import 'package:laundry/utils/LSConstants.dart';
 import 'package:nb_utils/nb_utils.dart';
 import 'package:provider/provider.dart';
 

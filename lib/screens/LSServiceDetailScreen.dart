@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:laundry/components/LSNavBar.dart';
 import 'package:laundry/model/LSPressingModel.dart';
 import 'package:laundry/utils/LSColors.dart';
-import 'package:laundry/utils/LSContstants.dart';
+import 'package:laundry/utils/LSConstants.dart';
 import 'package:laundry/utils/LSWidgets.dart';
 import 'package:nb_utils/nb_utils.dart';
 import 'package:url_launcher/url_launcher.dart';

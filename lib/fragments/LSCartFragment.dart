@@ -7,7 +7,7 @@ import 'package:laundry/model/LSOrder.dart';
 import 'package:laundry/screens/LSNotificationsScreen.dart';
 import 'package:laundry/screens/LSSchedule/LSScheduleScreen.dart';
 import 'package:laundry/utils/LSColors.dart';
-import 'package:laundry/utils/LSContstants.dart';
+import 'package:laundry/utils/LSConstants.dart';
 import 'package:laundry/utils/LSWidgets.dart';
 import 'package:nb_utils/nb_utils.dart';
 import 'package:provider/provider.dart';

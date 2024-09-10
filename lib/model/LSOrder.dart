@@ -1,13 +1,11 @@
 import 'package:laundry/model/LSAddressModel.dart';
 import 'package:laundry/model/LSCartModel.dart';
-import 'package:laundry/utils/LSContstants.dart';
 
 class LSOrder {
   static LSOrder? _instance;
-  static int _nextId = 0;
 
-  String id;
-  String? userID;
+  int id;
+  String? clientID;
   LSAddressModel? address;
   DateTime pickUpDate;
   DateTime deliveryDate;
@@ -29,13 +27,12 @@ class LSOrder {
 
   // Private named constructor
   LSOrder._internal()
-      : id = _generateOrderId(),
+      : id = 0,
         address = null,
         pickUpDate = DateTime.now(),
         deliveryDate = DateTime.now(),
         paymentMethod = null,
         confirmationTimestamp = DateTime.now(),
-        userID = user,
         cartItems = [],
         totalPrice = 0.0,
         isConfirmed = false,
@@ -47,9 +44,7 @@ class LSOrder {
 
   // Factory constructor that returns the same instance or creates a new one
   factory LSOrder() {
-    if (_instance == null) {
-      _instance = LSOrder._internal();
-    }
+    _instance ??= LSOrder._internal();
     return _instance!;
   }
 
@@ -58,10 +53,7 @@ class LSOrder {
   }
 
   // Static method to generate a unique order ID
-  static String _generateOrderId() {
-    _nextId++;
-    return _nextId.toString().padLeft(8, '0');  // Pads the ID with leading zeros to ensure it is 8 digits long
-  }
+
 
   // Static method to check if the instance exists
   static bool exists() {
@@ -77,33 +69,37 @@ class LSOrder {
   }
 
   void setPickUpDate(DateTime dateTime) {
-    this.pickUpDate = dateTime;
+    pickUpDate = dateTime;
   }
 
   void setDeliveryDate(DateTime dateTime) {
-    this.deliveryDate = dateTime;
+    deliveryDate = dateTime;
   }
 
   void setPaymentMethod(String method) {
-    this.paymentMethod = method;
+    paymentMethod = method;
   }
 
   void setdeliveryType(String method) {
-    this.deliveryType = method;
+    deliveryType = method;
+  }
+
+  void setClientID(String clientID) {
+    this.clientID = clientID;
   }
 
   void confirmOrder() {
-    this.confirmationTimestamp = DateTime.now();
-    this.isConfirmed = true;
+    confirmationTimestamp = DateTime.now();
+    isConfirmed = true;
   }
 
   void setCartItems(List<LSCartModel> items) {
-    this.cartItems = items;
-    this.totalPrice = items.fold(0.0, (sum, item) => sum + item.productPrice * item.quantity.value);
+    cartItems = items;
+    totalPrice = items.fold(0.0, (sum, item) => sum + item.productPrice * item.quantity.value);
   }
 
   void addPrice(double price) {
-    this.totalPrice += price;
+    totalPrice += price;
   }
 
   static set instance(LSOrder value) {
@@ -112,6 +108,6 @@ class LSOrder {
 
   @override
   String toString() {
-    return 'LSOrder{id: $id, userID: $userID, address: $address, pickUpDate: $pickUpDate, deliveryDate: $deliveryDate, paymentMethod: $paymentMethod, confirmationTimestamp: $confirmationTimestamp, cartItems: $cartItems, totalPrice: $totalPrice}';
+    return 'LSOrder{id: $id, clientID: $clientID, address: $address, pickUpDate: $pickUpDate, deliveryDate: $deliveryDate, paymentMethod: $paymentMethod, confirmationTimestamp: $confirmationTimestamp, cartItems: $cartItems, totalPrice: $totalPrice}';
   }
 }

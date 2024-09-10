@@ -1,8 +1,11 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:laundry/model/LSPressingModel.dart';
+import 'package:laundry/model/LSServicesModel.dart';
+import 'package:laundry/screens/LSNoInternet.dart';
+import 'package:laundry/services/api/LSCommandeAPI.dart';
 import 'package:laundry/services/api/LSItemAPI.dart';
+import 'package:laundry/services/api/LSPressingAPI.dart';
 import 'package:laundry/services/api/LSSalesAPI.dart';
 import 'package:laundry/services/api/LSServicesAPI.dart';
 import 'package:laundry/services/api/LSAddressAPI.dart';
@@ -137,7 +140,7 @@ class LSHomeFragmentState extends State<LSHomeFragment> {
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       setState(() {});
     });
-    if (Provider.of<LSAuthService>(context, listen: false).user == null) {
+    if (LSServicesModel.services.isEmpty) {
       readToken();
     } else {
       setState(() {
@@ -152,14 +155,17 @@ class LSHomeFragmentState extends State<LSHomeFragment> {
       final authService = Provider.of<LSAuthService>(context, listen: false);
       await authService.tryToken(token: token);
 
-      Provider.of<LSAddressAPI>(context, listen: false).getAddress(authService.client?.clientID);
-      Provider.of<LSCreditCardAPI>(context, listen: false).getCreditCard(authService.client?.clientID);
+      await Provider.of<LSAddressAPI>(context, listen: false).getAddress(authService.client?.clientID);
+      await Provider.of<LSCreditCardAPI>(context, listen: false).getCreditCard(authService.client?.clientID);
       await Provider.of<LSServicesAPI>(context, listen: false).getAllServices();
       await Provider.of<LSSalesAPI>(context, listen: false).getAllSales();
       await Provider.of<LSItemAPI>(context, listen: false).getAllItems();
-      await LSPressingModel.fetchPressings();
-    } on Exception catch (e) {
-      print(e);
+      await Provider.of<LSCommandeAPI>(context, listen: false).getAllCommandes();
+      await Provider.of<LSPressingAPI>(context, listen: false).fetchPressings();
+      await Provider.of<LSItemAPI>(context, listen: false).fetchCategoryIdAndName();
+      await LSNotificationsModel.loadNotifications();
+    } on Exception {
+      LSNoInternet().launch(context);
     } finally {
       setState(() {
         isLoading = false;
@@ -253,7 +259,7 @@ class LSHomeFragmentState extends State<LSHomeFragment> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               8.height,
-              Text('Top Services', style: boldTextStyle(size: 18)).paddingOnly(left: 16, top: 16, right: 16, bottom: 8),
+              Text('Nos Services', style: boldTextStyle(size: 18)).paddingOnly(left: 16, top: 16, right: 16, bottom: 8),
               LSTopServiceComponent(),
               Row(
                 crossAxisAlignment: CrossAxisAlignment.center,

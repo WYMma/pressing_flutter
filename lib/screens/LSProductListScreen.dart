@@ -6,7 +6,7 @@ import 'package:laundry/model/LSSalesModel.dart';
 import 'package:laundry/model/LSServicesModel.dart';
 import 'package:laundry/services/api/LSItemAPI.dart';
 import 'package:laundry/utils/LSColors.dart';
-import 'package:laundry/utils/LSContstants.dart';
+import 'package:laundry/utils/LSConstants.dart';
 import 'package:laundry/utils/LSWidgets.dart';
 import 'package:nb_utils/nb_utils.dart';
 import 'package:provider/provider.dart';
@@ -37,12 +37,7 @@ class _LSProductListScreenState extends State<LSProductListScreen> {
     return 0.0;
   }
 
-  final List<String> categories = [
-    'Tout',
-    'Homme',
-    'Femme',
-    'Enfant',
-  ];
+  final Map<int, String> categories = LSItemAPI.categories;
 
   String selectedCategory = 'Tout';
 
@@ -63,14 +58,28 @@ class _LSProductListScreenState extends State<LSProductListScreen> {
     }
   }
 
+  // Function to retrieve the key from the value in the categories map
+  int? getKeyFromValue(Map<int, String> map, String value) {
+    for (var entry in map.entries) {
+      if (entry.value == value) {
+        return entry.key; // Return the key if the value matches
+      }
+    }
+    return null; // Return null if no match is found
+  }
+
   @override
   Widget build(BuildContext context) {
     final cart = Provider.of<LSCartProvider>(context);
     final dbHelper = LSDBHelper();
 
-    List<LSItemModel> filteredProducts = selectedCategory == 'Tout'
+    // Get the key (category ID) corresponding to the selected category
+    int? selectedCategoryID = getKeyFromValue(categories, selectedCategory);
+
+    // Filter products based on the selected category
+    List<LSItemModel> filteredProducts = selectedCategoryID == 0 // 'Tout'
         ? LSItemModel.items
-        : LSItemModel.items.where((product) => product.categorieID == selectedCategory).toList();
+        : LSItemModel.items.where((product) => product.categorieID == selectedCategoryID.toString()).toList();
 
     return Scaffold(
       appBar: appBarWidget(
@@ -126,21 +135,21 @@ class _LSProductListScreenState extends State<LSProductListScreen> {
                 return GestureDetector(
                   onTap: () {
                     setState(() {
-                      selectedCategory = categories[index];
+                      selectedCategory = categories.values.elementAt(index);
                     });
                   },
                   child: Container(
                     padding: EdgeInsets.symmetric(horizontal: 17.5, vertical: 8.0),
                     margin: EdgeInsets.symmetric(horizontal: 4.0),
                     decoration: BoxDecoration(
-                      color: selectedCategory == categories[index] ? Colors.blue : Colors.grey[200],
+                      color: selectedCategory == categories.values.elementAt(index) ? Colors.blue : Colors.grey[200],
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Center(
                       child: Text(
-                        categories[index],
+                        categories.values.elementAt(index),
                         style: TextStyle(
-                          color: selectedCategory == categories[index] ? Colors.white : Colors.black,
+                          color: selectedCategory == categories.values.elementAt(index) ? Colors.white : Colors.black,
                           fontWeight: FontWeight.bold,
                         ),
                       ),

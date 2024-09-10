@@ -3,7 +3,10 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:laundry/components/LSNavBarCourier.dart';
 import 'package:laundry/fragmentsCourier/LSMissionFragment.dart';
 import 'package:laundry/main.dart';
+import 'package:laundry/model/LSMissionModel.dart';
+import 'package:laundry/screens/LSNoInternet.dart';
 import 'package:laundry/services/LSAuthService.dart';
+import 'package:laundry/services/api/LSMissionAPI.dart';
 import 'package:laundry/utils/LSColors.dart';
 import 'package:laundry/utils/LSImages.dart';
 import 'package:nb_utils/nb_utils.dart';
@@ -44,8 +47,10 @@ class LSCourierHomeFragmentState extends State<LSCourierHomeFragment> {
       final authService = Provider.of<LSAuthService>(context, listen: false);
       await authService.tryToken(token: token);
       await authService.retrieveApiKeys();
-    } on Exception catch (e) {
-      print(e);
+      await Provider.of<LSMissionAPI>(context, listen: false).getAllMissions(context);
+      print('Retrived missions: ' + LSMissionModel.MissionHistory.toString());
+    } on Exception {
+      LSNoInternet().launch(context);
     } finally {
       setState(() {
         isLoading = false;
@@ -146,7 +151,7 @@ class LSCourierHomeFragmentState extends State<LSCourierHomeFragment> {
                         children: [
                           Text('En cours', style: boldTextStyle(size: 16)),
                           8.height,
-                          Text('5', style: boldTextStyle(size: 24, color: LSColorPrimary)),
+                          Text(LSMissionModel.MissionHistory.where((mission) => mission.status == "En cours").length.toString(), style: boldTextStyle(size: 24, color: LSColorPrimary)),
                         ],
                       ),
                       VerticalDivider(
@@ -158,7 +163,7 @@ class LSCourierHomeFragmentState extends State<LSCourierHomeFragment> {
                         children: [
                           Text('Complété', style: boldTextStyle(size: 16)),
                           8.height,
-                          Text('12', style: boldTextStyle(size: 24, color: LSColorPrimary)),
+                          Text(LSMissionModel.MissionHistory.where((mission) => mission.status == "Terminée").length.toString(), style: boldTextStyle(size: 24, color: LSColorPrimary)),
                         ],
                       ),
                     ],

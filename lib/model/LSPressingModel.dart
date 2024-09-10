@@ -1,7 +1,3 @@
-import 'package:laundry/services/dio.dart';
-import 'package:dio/dio.dart' as Dio;
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-
 class LSPressingModel {
   String name;
   String writtenAddress;
@@ -36,23 +32,5 @@ class LSPressingModel {
   @override
   String toString() {
     return 'LSPressingModel{name: $name, writtenAddress: $writtenAddress, googleMapAddress: $googleMapAddress, phoneNumber: $phoneNumber, image: $image, description: $description}';
-  }
-
-  static Future<void> fetchPressings() async {
-    final storage = FlutterSecureStorage();
-    String? token = await storage.read(key: 'token');
-    try {
-      Dio.Response response = await dio().get(
-        '/pressing',
-        options: Dio.Options(
-          headers: {'Authorization': 'Bearer $token'},
-        ),
-      );
-      if (response.statusCode == 200) {
-        pressings = List<LSPressingModel>.from(response.data.map((shop) => LSPressingModel.fromJson(shop)));
-      }
-    } catch (e) {
-      print("Error fetching shops: $e");
-    }
   }
 }

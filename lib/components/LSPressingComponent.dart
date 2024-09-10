@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:laundry/model/LSPressingModel.dart';
-import 'package:laundry/utils/LSContstants.dart';
+import 'package:laundry/utils/LSConstants.dart';
 import 'package:nb_utils/nb_utils.dart';
 
 import '../screens/LSServiceDetailScreen.dart';

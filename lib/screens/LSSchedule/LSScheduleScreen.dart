@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:laundry/components/LSAddressListComponent.dart';
-import 'package:laundry/services/api/LSLignePanierAPI.dart';
+import 'package:laundry/services/LSAuthService.dart';
+import 'package:laundry/services/api/LSCommandeAPI.dart';
 import 'package:laundry/services/localDB/LSCartProvider.dart';
 import 'package:laundry/fragments/LSHomeFragment.dart';
 import 'package:laundry/screens/LSSchedule/LSCompleteComponent.dart';
@@ -252,15 +253,33 @@ class LSScheduleScreenState extends State<LSScheduleScreen> {
                 } else {
                   bool isAuthenticated = await LSLocalAuthService.authenticate();
                   if (isAuthenticated) {
-                    toast('Commande réussie');
-                    order.confirmOrder();
-                    order.status = 'Confirmé';
-                    _clearCart();
-                    LSOrder.OrderHistory.add(order);
-                    Provider.of<LSLignePanierAPI>(context, listen: false).uploadLignePanierItems(order.cartItems, order.totalPrice);
-                    LSOrder.reset();
-                    finish(context);
-                    LSHomeFragment().launch(context);
+                    try {
+                      var authService = Provider.of<LSAuthService>(context, listen: false);
+                      order.setClientID(authService.client!.clientID);
+                      order.confirmOrder();
+                      order.status = 'Confirmé';
+                      print(order);
+
+                      Provider.of<LSCommandeAPI>(context, listen: false).uploadLignePanierItems(
+                        order,
+                        Provider.of<LSCartProvider>(context, listen: false).getTotalPrice(),
+                      );
+
+                      LSOrder.reset();
+                      _clearCart();
+                      finish(context);
+                      LSHomeFragment().launch(context);
+                      toast('Commande réussie');
+                    } catch (e) {
+                      // Handle any errors that might occur
+                      print('Erreur lors de la commande: $e');
+                      toast('Une erreur est survenue lors de la commande. Veuillez réessayer.');
+                      // Optionally, you might want to reset the order or take some other action
+                      LSOrder.reset();
+                      _clearCart();
+                      finish(context);
+                      LSHomeFragment().launch(context);
+                    }
                   } else {
                     toast('Authentification échouée');
                     LSOrder.reset();

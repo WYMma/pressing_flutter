@@ -124,7 +124,7 @@ class LSCommandeAPI extends ChangeNotifier {
           headers: {'Authorization': 'Bearer $token'},
         ),
       );
-
+      print(response.data);
       if (response.statusCode == 200) {
         List<dynamic>? data = response.data;
         if (data != null) {

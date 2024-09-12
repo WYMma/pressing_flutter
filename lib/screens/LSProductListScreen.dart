@@ -50,7 +50,9 @@ class _LSProductListScreenState extends State<LSProductListScreen> {
     init();
   }
 
-  Future<void> init() async {
+  init() async {
+    await 2.microseconds.delay;
+    setStatusBarColor(context.cardColor);
     try {
       await Provider.of<LSItemAPI>(context, listen: false).getAllItems();
     } catch (e) {

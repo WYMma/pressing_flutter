@@ -59,15 +59,15 @@ class LSMissionDetailScreenState extends State<LSMissionDetailScreen> {
   String statusText(String status) {
     switch (status) {
       case 'Confirmé':
-        return 'Votre commande a été confirmée';
+        return 'La commande a été confirmée';
       case 'Ramassée':
-        return 'Votre commande a été ramassée';
+        return 'La commande a été ramassée';
       case 'En cours':
-        return 'Votre commande est en cours de traitement';
+        return 'La commande est en cours de traitement';
       case 'Expédiée':
-        return 'Votre commande est en cours de livraison';
+        return 'La commande est en cours de livraison';
       case 'Livrée':
-        return 'Votre commande a été livrée';
+        return 'La commande a été livrée';
       default:
         return 'Statut inconnu';
     }
@@ -177,13 +177,13 @@ class LSMissionDetailScreenState extends State<LSMissionDetailScreen> {
                         backgroundColor: LSColorSecondary
                     ),
                     padding: EdgeInsets.all(12),
-                    child: statusImage(widget.data?.status as String),
+                    child: statusImage(widget.data!.order!.status as String),
                   ),
                   16.width,
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(statusText(widget.data?.status as String), style: boldTextStyle()),
+                      Text(statusText(widget.data!.order!.status as String), style: boldTextStyle()),
                       4.height,
                       Text('Voir les détails', style: boldTextStyle(color: LSColorPrimary)).onTap(() {
                         LSMissionStatusScreen(widget.data).launch(context);

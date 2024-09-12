@@ -114,7 +114,7 @@ class LSBookingFragmentState extends State<LSBookingFragment> {
         body: TabBarView(
           children: [
             LSBookingComponents('En cours'),
-            LSBookingComponents('Terminé'),
+            LSBookingComponents('Livrée'),
           ],
         ),
         bottomNavigationBar: LSNavBar(selectedIndex: _selectedIndex),

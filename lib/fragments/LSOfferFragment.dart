@@ -36,8 +36,9 @@ class LLSOfferFragmentState extends State<LSOfferFragment> {
     });
   }
 
-  Future<void> init() async {
-    setStatusBarColor(appStore.isDarkModeOn ? context.cardColor : Colors.white);
+  init() async {
+    await 2.microseconds.delay;
+    setStatusBarColor(context.cardColor);
     try {
       await Provider.of<LSSalesAPI>(context, listen: false).getAllSales();
     } catch (e) {

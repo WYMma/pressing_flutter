@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:laundry/components/LSNavBarCourier.dart';
 import 'package:laundry/main.dart';
 import 'package:laundry/screens/LSNotificationsScreen.dart';
+import 'package:laundry/services/localDB/LSDBHelper.dart';
 import 'package:laundry/utils/LSConstants.dart';
 import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -204,8 +205,10 @@ class LSProfileFragmentState extends State<LSProfileFragment> {
                         icon: Icon(Icons.logout, color: Colors.red),
                         label: Text('Oui', style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
                         onPressed: () async {
-                          // Perform logout actions
-                          context.read<LSCartProvider>().clearCart();
+                          final cartProvider = Provider.of<LSCartProvider>(context, listen: false);
+                          final dbHelper = LSDBHelper();
+                          cartProvider.clearCart();
+                          await dbHelper.clearCart();
                           Navigator.of(dialogContext).pop();
                           Navigator.of(context).pushAndRemoveUntil(
                             MaterialPageRoute(builder: (context) => LSSignInScreen()),

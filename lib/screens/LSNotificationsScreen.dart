@@ -106,31 +106,17 @@ class _LSNotificationsScreenState extends State<LSNotificationsScreen> {
                         children: [
                           Text(
                             message.notification?.title ?? 'N/D',
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                              color: isRead
-                                  ? Colors.grey.shade700
-                                  : Colors.white,
-                            ),
+                            style: boldTextStyle()
                           ),
                           SizedBox(height: 8),
                           Text(
                             message.notification?.body ?? '',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: isRead
-                                  ? Colors.grey.shade600
-                                  : Colors.white70,
-                            ),
+                            style: secondaryTextStyle(),
                           ),
                           SizedBox(height: 8),
                           Text(
                             formatTimestamp(message.sentTime),
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.grey,
-                            ),
+                            style: secondaryTextStyle(),
                           ),
                         ],
                       ),
@@ -167,25 +153,25 @@ class _LSNotificationsScreenState extends State<LSNotificationsScreen> {
   }
 
   String formatTimestamp(DateTime? timestamp) {
-    if (timestamp == null) return 'Unknown time';
+    if (timestamp == null) return 'Heure inconnue';
 
     final now = DateTime.now();
     final difference = now.difference(timestamp);
 
     if (difference.inDays == 0) {
       if (difference.inHours > 0) {
-        return '${difference.inHours} hour(s) ago';
+        return 'Il y a ${difference.inHours} heure(s)';
       } else if (difference.inMinutes > 0) {
-        return '${difference.inMinutes} minute(s) ago';
+        return 'Il y a ${difference.inMinutes} minute(s)';
       } else {
-        return 'Just now';
+        return 'À l’instant';
       }
     } else if (difference.inDays == 1) {
-      return 'Yesterday at ${DateFormat('HH:mm').format(timestamp)}';
+      return 'Hier à ${DateFormat('HH:mm').format(timestamp)}';
     } else if (difference.inDays < 7) {
-      return '${DateFormat('EEEE').format(timestamp)} at ${DateFormat('HH:mm').format(timestamp)}';
+      return '${DateFormat('EEEE').format(timestamp)} à ${DateFormat('HH:mm').format(timestamp)}';
     } else {
-      return '${DateFormat('dd-MM-yyyy').format(timestamp)} at ${DateFormat('HH:mm').format(timestamp)}';
+      return '${DateFormat('dd-MM-yyyy').format(timestamp)} à ${DateFormat('HH:mm').format(timestamp)}';
     }
   }
 }

@@ -61,7 +61,6 @@ class LSMissionStatusScreenState extends State<LSMissionStatusScreen> {
               label: Text('Oui', style: TextStyle(color: LSColorPrimary, fontWeight: FontWeight.bold)),
               onPressed: () async {
                 await Provider.of<LSCommandeAPI>(context, listen: false).deleteCommande(widget.data!.commandeID);
-                await Provider.of<LSMissionAPI>(context, listen: false).updateMission(widget.data!.missionID, context);
                 Navigator.of(context).pop(); // Close the dialog
                 LSMissionFragment().launch(context); // Go back to the previous screen
                 toast('Commande annulée avec succès');
@@ -92,6 +91,7 @@ class LSMissionStatusScreenState extends State<LSMissionStatusScreen> {
               label: Text('Oui', style: TextStyle(color: LSColorPrimary, fontWeight: FontWeight.bold)),
               onPressed: () async {
                 await Provider.of<LSCommandeAPI>(context, listen: false).pickup(widget.data!.commandeID);
+                await Provider.of<LSMissionAPI>(context, listen: false).updateMission(widget.data!.missionID);
                 Navigator.of(context).pop();
                 LSMissionFragment().launch(context);
                 toast('Commande marquée comme ramassée');
@@ -122,6 +122,7 @@ class LSMissionStatusScreenState extends State<LSMissionStatusScreen> {
               label: Text('Oui', style: TextStyle(color: LSColorPrimary, fontWeight: FontWeight.bold)),
               onPressed: () async {
                 await Provider.of<LSCommandeAPI>(context, listen: false).deliver(widget.data!.commandeID);
+                await Provider.of<LSMissionAPI>(context, listen: false).updateMission(widget.data!.missionID);
                 Navigator.of(context).pop();
                 LSMissionFragment().launch(context);
                 toast('Commande marquée comme livrée');
@@ -276,7 +277,7 @@ class LSMissionStatusScreenState extends State<LSMissionStatusScreen> {
                       ),
                     ),
                   ],
-                  if (Provider.of<LSAuthService>(context, listen: false).user?.role != 'Client' && widget.data!.order!.isPickedUp && !widget.data!.order!.isDelivered) ...[
+                  if (Provider.of<LSAuthService>(context, listen: false).user?.role != 'Client' && widget.data!.order!.isShipped && !widget.data!.order!.isDelivered) ...[
                     Center( // This centers the button horizontally
                       child: AppButton(
                         text: 'Marquer comme livré',

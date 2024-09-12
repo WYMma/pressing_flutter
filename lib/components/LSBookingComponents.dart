@@ -46,8 +46,8 @@ class LSBookingComponentsState extends State<LSBookingComponents> {
           LSOrder data = LSOrder.OrderHistory[i];
 
           // Filter bookings based on the status
-          if ((widget.stat == "En cours" && data.status != "Terminé") ||
-              (widget.stat == "Terminé" && data.status == "Terminé")) {
+          if ((widget.stat == "En cours" && data.status != "Livrée") ||
+              (widget.stat == "Livrée" && data.status == "Livrée")) {
             return Container(
               margin: EdgeInsets.all(8),
               padding: EdgeInsets.all(16),

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:laundry/components/LSMissionComponents.dart';
 import 'package:laundry/components/LSNavBarCourier.dart';
+import 'package:laundry/services/api/LSMissionAPI.dart';
 import 'package:nb_utils/nb_utils.dart';
+import 'package:provider/provider.dart';
 
 import '../main.dart';
 import '../utils/LSColors.dart';
@@ -24,6 +26,7 @@ class LSMissionFragmentState extends State<LSMissionFragment> {
   init() async {
     await 2.microseconds.delay;
     setStatusBarColor(context.cardColor);
+    await Provider.of<LSMissionAPI>(context, listen: false).getAllMissions(context);
   }
 
   @override
@@ -67,7 +70,7 @@ class LSMissionFragmentState extends State<LSMissionFragment> {
         body: TabBarView(
           children: [
             LSMissionComponents('En cours'),
-            LSMissionComponents('Ramassée'),
+            LSMissionComponents('Terminée'),
           ],
         ),
         bottomNavigationBar: LSNavBarCourier(selectedIndex: _selectedIndex),

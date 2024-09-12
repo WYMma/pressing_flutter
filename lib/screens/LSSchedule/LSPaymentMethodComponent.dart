@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:laundry/components/LSCreditCardComponent.dart';
 import 'package:nb_utils/nb_utils.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../main.dart';
 import '../../model/LSOrder.dart';
@@ -18,7 +19,7 @@ class LSPaymentMethodComponentState extends State<LSPaymentMethodComponent> with
     {'label': 'Paiement à la livraison', 'icon': Icons.attach_money},
     {'label': 'Carte bancaire', 'icon': Icons.credit_card},
   ];
-  String? selectedPaymentMethod = 'Paiement à la livraison';
+  String? selectedPaymentMethod;
   bool showSavedPaymentMethods = false; // Flag to control the component rendering
   TextEditingController couponController = TextEditingController(); // Controller for the coupon input
 
@@ -26,34 +27,35 @@ class LSPaymentMethodComponentState extends State<LSPaymentMethodComponent> with
   void initState() {
     super.initState();
     init();
-    if (LSOrder.exists()) {
-      LSOrder order = LSOrder();
-      order.setPaymentMethod('Paiement à la livraison');
-    }
   }
 
-  init() async {
-    // Any necessary initializations
-  }
-
-  @override
-  void setState(fn) {
-    if (mounted) super.setState(fn);
-  }
-
-  void handlePaymentMethodSelection(String? value) {
+  Future<void> init() async {
+    // Retrieve the stored payment method
+    SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
-      selectedPaymentMethod = value;
+      selectedPaymentMethod = prefs.getString('selectedPaymentMethod') ?? 'Paiement à la livraison';
+    });
+  }
+
+  Future<void> handlePaymentMethodSelection(String? value) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      selectedPaymentMethod = value; // Update the selected value in state
+      prefs.setString('selectedPaymentMethod', value!); // Save the selected method
+
       if (value == 'Carte bancaire') {
-        showSavedPaymentMethods = true;
+        showSavedPaymentMethods = true; // Show saved payment methods
         if (LSOrder.exists()) {
           LSOrder order = LSOrder();
           order.setPaymentMethod('Carte bancaire');
         }
       } else {
-        showSavedPaymentMethods = false;
+        showSavedPaymentMethods = false; // Hide saved payment methods
+        if (LSOrder.exists()) {
+          LSOrder order = LSOrder();
+          order.setPaymentMethod('Paiement à la livraison');
+        }
       }
-      print('showSavedPaymentMethods: $showSavedPaymentMethods'); // Add this line for debugging
     });
   }
 
@@ -61,8 +63,28 @@ class LSPaymentMethodComponentState extends State<LSPaymentMethodComponent> with
   Widget build(BuildContext context) {
     super.build(context);
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: appStore.isDarkModeOn ? context.scaffoldBackgroundColor : LSColorSecondary,
+        elevation: 0,
+        leading: showSavedPaymentMethods
+            ? IconButton(
+          icon: Icon(Icons.arrow_back, color: context.iconColor),
+          onPressed: () {
+            setState(() {
+              showSavedPaymentMethods = false; // Go back to the payment method selection
+            });
+          },
+        )
+            : null,
+        automaticallyImplyLeading: false,
+        title: Text(
+          showSavedPaymentMethods ? 'Carte Bancaire' : 'Mode de Paiement',
+          style: boldTextStyle(color: context.iconColor),
+        ),
+        centerTitle: true,
+      ),
       body: Container(
-        color: appStore.isDarkModeOn ? context.scaffoldBackgroundColor : LSColorSecondary.withOpacity(0.55),
+        color: appStore.isDarkModeOn ? context.scaffoldBackgroundColor : LSColorSecondary,
         padding: EdgeInsets.all(8),
         child: showSavedPaymentMethods
             ? LSCreditCardComponent() // Show the saved payment methods component
@@ -100,7 +122,7 @@ class LSPaymentMethodComponentState extends State<LSPaymentMethodComponent> with
                       return RadioListTile<String?>(
                         value: method,
                         activeColor: LSColorPrimary,
-                        groupValue: selectedPaymentMethod,
+                        groupValue: selectedPaymentMethod, // Link with the selected value
                         title: Row(
                           children: [
                             Icon(icon, color: context.iconColor),
@@ -108,7 +130,7 @@ class LSPaymentMethodComponentState extends State<LSPaymentMethodComponent> with
                             Text(method, style: primaryTextStyle()),
                           ],
                         ),
-                        onChanged: handlePaymentMethodSelection,
+                        onChanged: handlePaymentMethodSelection, // Call the updated method
                       ).paddingOnly(left: 16, right: 16);
                     },
                   ),
@@ -125,4 +147,3 @@ class LSPaymentMethodComponentState extends State<LSPaymentMethodComponent> with
   @override
   bool get wantKeepAlive => true;
 }
-

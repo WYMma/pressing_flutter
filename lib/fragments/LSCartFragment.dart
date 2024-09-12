@@ -29,6 +29,12 @@ class _LSCartFragmentState extends State<LSCartFragment> {
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       setState(() {});
     });
+    init();
+  }
+
+  init() async {
+    await 2.microseconds.delay;
+    setStatusBarColor(context.cardColor);
   }
 
   @override

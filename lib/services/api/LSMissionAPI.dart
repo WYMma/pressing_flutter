@@ -51,18 +51,17 @@ class LSMissionAPI extends ChangeNotifier {
     }
   }
 
-  Future<void> updateMission(int id, BuildContext context) async {
+  Future<void> updateMission(int id) async {
     String? token = await storage.read(key: 'token');
     try {
-      Dio.Response response = await dio().get(
+      await dio().get(
         '/missions/$id',
         options: Dio.Options(
           headers: {'Authorization': 'Bearer $token'},
         ),
       );
-      getAllMissions(context);
     } catch (e) {
-      print("Error retrieving Commandes: $e");
+      print("Error updating Mission: $e");
     }
   }
 }

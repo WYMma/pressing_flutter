@@ -46,8 +46,8 @@ class LSMissionComponentsState extends State<LSMissionComponents> {
           LSMissionModel data = LSMissionModel.MissionHistory[i];
 
           // Filter bookings based on the status
-          if ((widget.stat == "En cours" && data.status != "Terminé") ||
-              (widget.stat == "Terminé" && data.status == "Terminé")) {
+          if ((widget.stat == "En cours" && data.status != "Terminée") ||
+              (widget.stat == "Terminée" && data.status == "Terminée")) {
             return Container(
               margin: EdgeInsets.all(8),
               padding: EdgeInsets.all(16),

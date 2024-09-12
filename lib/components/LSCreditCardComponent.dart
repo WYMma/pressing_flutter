@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:laundry/main.dart';
 import 'package:laundry/services/LSAuthService.dart';
 import 'package:laundry/services/LSLocalAuthService.dart';
 import 'package:laundry/services/api/LSCreditCardAPI.dart';
@@ -22,6 +23,7 @@ class _LSCreditCardComponentState extends State<LSCreditCardComponent> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: appStore.isDarkModeOn ? context.scaffoldBackgroundColor : LSColorSecondary,
       body: ListView.builder(
         shrinkWrap: true,
         itemCount: LSCreditCardComponent.savedPaymentMethods.length,

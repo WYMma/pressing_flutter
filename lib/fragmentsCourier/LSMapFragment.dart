@@ -25,9 +25,10 @@ class LSMapFragmentState extends State<LSMapFragment> {
   @override
   void dispose() {
     super.dispose();
+
   }
 
-  Future<void> init() async {
+  init() async {
     setStatusBarColor(context.cardColor);
   }
 

@@ -69,11 +69,7 @@ class LSCreditsPage extends StatelessWidget {
                             const SizedBox(height: 8.0),
                             Text(
                               '${instituteData['street']}',
-                              style: GoogleFonts.roboto(
-                                fontSize: 14.0,
-                                fontWeight: FontWeight.w400,
-                                color: Colors.grey[400],
-                              ),
+                              style: secondaryTextStyle()
                             ),
                             const SizedBox(height: 16.0),
                             Row(

@@ -41,11 +41,14 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  await FirebaseAPI().initNotifications();
 
   appStore.toggleDarkMode(value: getBoolAsync(isDarkModeOnPref));
   appStore.toggleSignInStatus(value: getBoolAsync(isSignedInPref));
-  appStore.toggleNotificationsStatus(value: !getBoolAsync(isNotificationsEnabledPref));
+  appStore.toggleNotificationsStatus(value: getBoolAsync(isNotificationsEnabledPref));
+
+  if (appStore.isNotificationsEnabled){
+    await FirebaseAPI().initNotifications();
+  }
 
   defaultRadius = 10;
   defaultToastGravityGlobal = ToastGravity.BOTTOM;

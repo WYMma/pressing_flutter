@@ -17,6 +17,7 @@ class _LSMapComponentState extends State<LSMapComponent> {
   bool _isNavigating = false;
   bool _arrived = false;
   late MapBoxOptions _navigationOption;
+  bool _disposed = false; // Track if the component is disposed
 
   Future<void> initialize() async {
     if (!mounted) return;
@@ -24,6 +25,8 @@ class _LSMapComponentState extends State<LSMapComponent> {
     _navigationOption.initialLatitude = 37.7749;
     _navigationOption.initialLongitude = -122.4194;
     _navigationOption.mode = MapBoxNavigationMode.driving;
+
+    // Register the event listener
     MapBoxNavigation.instance.registerRouteEventListener(_onRouteEvent);
   }
 
@@ -35,7 +38,15 @@ class _LSMapComponentState extends State<LSMapComponent> {
 
   @override
   void dispose() {
-    _controller?.dispose();
+    // Set the disposed flag to true
+    _disposed = true;
+
+    // Finish navigation if it's still running
+    _controller?.finishNavigation();
+
+    // You can safely set _controller to null or finalize any other operations
+    _controller = null;
+
     super.dispose();
   }
 
@@ -44,7 +55,7 @@ class _LSMapComponentState extends State<LSMapComponent> {
     return Scaffold(
       body: Column(
         children: [
-          Expanded(  // Use Expanded to avoid overflow
+          Expanded(
             child: Container(
               color: Colors.grey[100],
               child: MapBoxNavigationView(
@@ -63,6 +74,9 @@ class _LSMapComponentState extends State<LSMapComponent> {
   }
 
   Future<void> _onRouteEvent(e) async {
+    // Don't handle events if the widget is disposed
+    if (_disposed) return;
+
     _distanceRemaining = await MapBoxNavigation.instance.getDistanceRemaining();
     _durationRemaining = await MapBoxNavigation.instance.getDurationRemaining();
 
@@ -89,7 +103,7 @@ class _LSMapComponentState extends State<LSMapComponent> {
         if (!_isMultipleStop) {
           await Future.delayed(const Duration(seconds: 3));
           await _controller?.finishNavigation();
-        } else {}
+        }
         break;
       case MapBoxEvent.navigation_finished:
       case MapBoxEvent.navigation_cancelled:
@@ -99,7 +113,10 @@ class _LSMapComponentState extends State<LSMapComponent> {
       default:
         break;
     }
-    //refresh UI
-    setState(() {});
+
+    // Update the UI after receiving a route event, only if still mounted
+    if (mounted) {
+      setState(() {});
+    }
   }
 }
